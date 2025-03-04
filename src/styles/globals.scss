@@ -1,0 +1,75 @@
+@use 'mixins';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+	--background: white;
+	--foreground: black;
+    --heroui-foreground: #333333;
+}
+
+body {
+	font-family: 思源黑体;
+	min-height: 100vh;
+	color: var(--foreground);
+	background: var(--background);
+	-webkit-font-smoothing: antialiased; /* 对 macOS Safari 较有效 */
+	-moz-osx-font-smoothing: grayscale; /* 对 Firefox 较有效 */
+}
+
+.wrapper {
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 1520px;
+	padding: 32px 18px 48px;
+}
+
+@media screen and (min-width: 768px) {
+	.wrapper {
+		padding: 96px 0px;
+	}
+}
+
+.bordered-button {
+	background-color: rgba(0, 0, 0, 0.3);
+}
+
+.text-title {
+	font-family: YouSheBiaoTiHei;
+}
+
+.ellipsis-3 {
+	@include mixins.ellipsis(3);
+}
+
+.ellipsis-2 {
+	@include mixins.ellipsis(2);
+}
+
+.ellipsis-1 {
+	@include mixins.ellipsis(1);
+}
+
+.glow-text {
+	text-shadow: 0 0 9px #158eff;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+}
+
+/* 滑块样式 */
+::-webkit-scrollbar-thumb {
+	background-color: #c7c7c7;
+	border-radius: 6px;
+}
+
+/* 滚动条轨道样式 */
+::-webkit-scrollbar-track {
+	background-color: #f3f4f6;
+	border-radius: 6px;
+}

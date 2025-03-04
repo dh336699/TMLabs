@@ -1,0 +1,10 @@
+{
+	"menus": ["首页", "产品", "服务", "课程", "合作"],
+	"footer": {
+		"slogan": [
+			"关注哪吒量化，开启你的智能量化之旅！",
+			"我命由我，不由天 My Fate is Mine, Not Heaven’s"
+		]
+	},
+	"contactUs": "联系我们"
+}
