@@ -3,7 +3,13 @@ import { heroui } from '@heroui/react'
 const config = {
 	content: ['./src/**/*.{ts,tsx}', './node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}'],
 	theme: {
-		extend: {},
+		extend: {
+            screens: {
+                'xxs': '320px',
+                'xs': '480px',
+                'md': '640px',
+            }
+        },
 	},
 	darkMode: 'class',
 	plugins: [

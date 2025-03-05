@@ -71,46 +71,7 @@ const Header = () => {
                 </DropdownMenu>
             </Dropdown>
 
-            <FontAwesomeIcon icon={faUser} className="w-5 h-5 text-white" />
-            {/* 
-			<NavbarContent
-				justify="end"
-			>
-				<NavbarItem>
-					<Button
-						color="primary"
-						variant="light"
-						onPress={switchLang}
-					>
-						{languagesLabel.map((lg, idx) => (
-							<div
-								key={lg.lang}
-								className="flex items-center gap-2"
-							>
-								{idx ? <div className="h-4 w-[1px] bg-foreground" /> : null}
-								<span
-									className={
-										lang === lg.lang ? 'text-primary' : 'text-foreground'
-									}
-								>
-									{lg.label}
-								</span>
-							</div>
-						))}
-					</Button>
-				</NavbarItem>
-            </NavbarContent> */}
-
-            {/* <NavbarMenuToggle
-				aria-label={isOpen ? 'Close menu' : 'Open menu'}
-				className="md:hidden"
-				icon={(isOpen) => (
-					<FontAwesomeIcon
-						className="text-xl text-primary"
-						icon={isOpen ? faXmark : faBars}
-					/>
-				)}
-			/> */}
+            <FontAwesomeIcon icon={faUser} className="w-5 h-5 text-white cursor-pointer" />
         </Navbar>
     )
 }
