@@ -6,9 +6,9 @@ export interface IQuestionaireItem {
     title: string;
     type: string;
     options: {
-        id: number,
+        id: number | string,
         content: string,
         sort_order: number
     }[]
 }
-export type QuestionaireDTO = IQuestionaireItem[] & IPagination
+export type QuestionaireDTO = { data: IQuestionaireItem[] } & IPagination

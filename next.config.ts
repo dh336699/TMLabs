@@ -10,6 +10,9 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  devServer: {
+    port: 5689,
+  },
 }
 
 export default nextConfig

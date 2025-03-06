@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useCallback, useMemo } from 'react'
+import { useCallback } from 'react'
 
 import { useTranslation } from '@/i18n/client'
 import { languagesLabel } from '@/i18n/settings'
@@ -50,7 +50,7 @@ const Header = () => {
             onMenuOpenChange={onOpenChange}
             isBlurred={false}
         >
-            <NavbarBrand className="gap-4">
+            <NavbarBrand className="gap-4 cursor-pointer" onClick={() => router.push('/')}>
                 <Image
                     width={44}
                     height={24}
@@ -71,7 +71,7 @@ const Header = () => {
                 </DropdownMenu>
             </Dropdown>
 
-            <FontAwesomeIcon icon={faUser} className="w-5 h-5 text-white cursor-pointer" />
+            <FontAwesomeIcon icon={faUser} onClick={() => router.push('/user-center')} className="w-5 h-5 text-white cursor-pointer" />
         </Navbar>
     )
 }

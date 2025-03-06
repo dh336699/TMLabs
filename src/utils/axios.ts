@@ -1,5 +1,7 @@
 "use client";
 import axios, { AxiosRequestConfig } from 'axios'
+import { log } from "console";
+import { isEmpty } from "lodash";
 
 type FetcherConfig = AxiosRequestConfig & {
   // 自定义扩展配置
@@ -12,7 +14,7 @@ export const httpRequest = async <Data = any>(
   config?: FetcherConfig
 ): Promise<Data> => {
   try {
-    const { data } = await axios.request<Data>({
+    const data:any = await axios.request<Data>({
       url,
       baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
       headers: {
@@ -36,7 +38,9 @@ axios.interceptors.response.use(
       if (response.data?.code && response.data?.code !== 0) {
         return Promise.reject(response.data)
       }
-      return response.data
+      if (response.status === 200) {
+        return !isEmpty(response.data) ? response.data : response
+      }
     },
     error => Promise.reject(error)
 )
@@ -48,7 +52,10 @@ const handleGlobalError = (error: unknown) => {
 
     switch (status) {
       case 401:
-        window.location.href = '/login'
+        alert('请先登录')
+        setTimeout(() => {
+            window.location.href = '/login'
+        }, 300)
         break
       case 403:
         alert('权限不足')

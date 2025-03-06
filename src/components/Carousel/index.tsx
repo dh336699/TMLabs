@@ -5,12 +5,14 @@ import useEmblaCarousel from "embla-carousel-react";
 import { Card, CardHeader, CardBody, RadioGroup, Radio, Button } from "@heroui/react";
 import { usePrevNextButtons } from "@/hooks/usePrevNextButtons";
 import { IQuestionaireItem } from "@/model/question";
-import { isEmpty } from "lodash";
+import { isEmpty, method } from "lodash";
 import { useTranslation } from "@/i18n/client";
+import { httpRequest } from "@/utils/axios";
 
 const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[] }) => {
     const { t } = useTranslation('question')
     const [curIdx, setCurIds] = useState(0)
+    const [answers, setAnswers] = useState<{ question_id: number | string; selected_option_ids: string[] }[]>([])
 
     const [emblaRef, emblaApi] = useEmblaCarousel({
         skipSnaps: true,
@@ -20,6 +22,38 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[] }) => 
         nextBtnDisabled,
         onPrevButtonClick,
         onNextButtonClick } = usePrevNextButtons(emblaApi)
+
+    const isDisabledClick = useMemo(() => {
+        if (!isEmpty(questionaires)) {
+            const question = questionaires[curIdx]
+            const answer = answers.find(a => a.question_id === question.id)
+            if (question?.is_required && (!answer || isEmpty(answer?.selected_option_ids))) {
+                return true
+            } else {
+                return false
+            }
+        } else {
+            return true
+        }
+    }, [questionaires, curIdx, answers])
+
+    const handleSelectAnswer = useCallback((value: string) => {
+        const questionId = questionaires[curIdx].id
+
+        if (isEmpty(answers)) {
+            setAnswers([{ question_id: questionId, selected_option_ids: [value] }])
+        } else {
+            const curAsnwer = answers[curIdx] ?? {}
+            curAsnwer.question_id = questionId
+            curAsnwer.selected_option_ids = [value]
+            setAnswers(prev => [...prev, curAsnwer])
+        }
+    }, [answers, setAnswers, questionaires, curIdx])
+
+    const handleSubmit = useCallback(async () => {
+        const res = await httpRequest('/survey/responses', { data: answers, method: 'POST' })
+        console.log(res);
+    }, [answers])
 
     const isFirst = useMemo(() => {
         if (!isEmpty(questionaires) && curIdx === 0) {
@@ -35,7 +69,6 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[] }) => 
 
     const updateState = useCallback(() => {
         if (!emblaApi) return
-        console.log(emblaApi.selectedScrollSnap());
         setCurIds(emblaApi.selectedScrollSnap())
     }, [emblaApi])
 
@@ -44,6 +77,12 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[] }) => 
             emblaApi.on('select', updateState)
         }
     }, [emblaApi, updateState])
+
+    useEffect(() => {
+        if (!isEmpty(answers)) {
+            localStorage.setItem('answers', JSON.stringify(answers))
+        }
+    }, [answers])
 
     return (
         <div className="xxs:w-[300px] md:w-auto max-w-[1024px] min-h-[400px] pt-12 overflow-hidden mx-auto" >
@@ -55,16 +94,15 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[] }) => 
                                 <h2 className="font-bold">{question.title}</h2>
                             </CardHeader>
                             <CardBody className="overflow-visible py-2 pb-6">
-                                {
-                                    !isEmpty(question.options) &&
-                                    <RadioGroup>
-                                        <Radio value="buenos-aires">Buenos Aires</Radio>
-                                        <Radio value="sydney">Sydney</Radio>
-                                        <Radio value="san-francisco">San Francisco</Radio>
-                                        <Radio value="london">London</Radio>
-                                        <Radio value="tokyo">Tokyo</Radio>
-                                    </RadioGroup>
-                                }
+                                <RadioGroup onValueChange={handleSelectAnswer}>
+                                    {
+                                        !isEmpty(question.options) ? question.options.map(option => (
+                                            <Radio value={option.id as string}>{option.content}</Radio>
+                                        )) : null
+
+                                    }
+                                </RadioGroup>
+
                             </CardBody>
                         </Card>
                     ))}
@@ -76,10 +114,10 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[] }) => 
                         !isFirst ? <Button onPress={onPrevButtonClick}>{t('上一题')}</Button> : <div></div>
                     }
                     {
-                        isLast && <Button color="primary" onPress={onNextButtonClick}>{t('结束答题')}</Button>
+                        isLast && <Button color="primary" isDisabled={isDisabledClick} onPress={handleSubmit}>{t('结束答题')}</Button>
                     }
                     {
-                        !isLast && <Button color="primary" className="justify-self-end" onPress={onNextButtonClick}>{t('下一题')}</Button>
+                        !isLast && <Button color="primary" isDisabled={isDisabledClick} className="justify-self-end" onPress={onNextButtonClick}>{t('下一题')}</Button>
                     }
                 </div>
             }
