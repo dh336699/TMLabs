@@ -1,0 +1,137 @@
+@use 'mixins';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+	--background: white;
+	--foreground: black;
+	--heroui-foreground: #333333;
+}
+
+body {
+	font-family: 思源黑体;
+	min-height: 100vh;
+	color: var(--foreground);
+	background: var(--background);
+	-webkit-font-smoothing: antialiased; /* 对 macOS Safari 较有效 */
+	-moz-osx-font-smoothing: grayscale; /* 对 Firefox 较有效 */
+}
+
+.wrapper {
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 1280px;
+	padding: 32px 18px 48px;
+}
+
+@media screen and (min-width: 768px) {
+	.wrapper {
+		padding: 96px 0px;
+	}
+}
+
+.bordered-button {
+	background-color: rgba(0, 0, 0, 0.3);
+}
+
+.text-title {
+	font-family: YouSheBiaoTiHei;
+}
+
+.ellipsis-3 {
+	@include mixins.ellipsis(3);
+}
+
+.ellipsis-2 {
+	@include mixins.ellipsis(2);
+}
+
+.ellipsis-1 {
+	@include mixins.ellipsis(1);
+}
+
+.glow-text {
+	text-shadow: 0 0 9px #158eff;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+}
+
+/* 滑块样式 */
+::-webkit-scrollbar-thumb {
+	background-color: #c7c7c7;
+	border-radius: 6px;
+}
+
+/* 滚动条轨道样式 */
+::-webkit-scrollbar-track {
+	background-color: #f3f4f6;
+	border-radius: 6px;
+}
+
+.constricted-content {
+	margin: 0 auto;
+	max-width: 1200px;
+}
+
+.embla {
+	max-width: 380px;
+	margin: auto;
+	--slide-height: 19rem;
+	--slide-spacing: 1rem;
+	--slide-size: 70%;
+}
+.embla__viewport {
+	overflow: hidden;
+}
+.embla__container {
+	display: flex;
+	touch-action: pan-y pinch-zoom;
+	margin-left: calc(var(--slide-spacing) * -1);
+}
+.embla__slide {
+	transform: translate3d(0, 0, 0);
+	flex: 0 0 var(--slide-size);
+	min-width: 0;
+	padding-left: var(--slide-spacing);
+}
+.embla__slide__number {
+	box-shadow: inset 0 0 0 0.2rem var(--detail-medium-contrast);
+	border-radius: 1.8rem;
+	font-size: 4rem;
+	font-weight: 600;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: var(--slide-height);
+	user-select: none;
+}
+
+.button-primary {
+	@apply text-descM12 font-Montserrat lg:text-descM15 bg-mainColor border-mainColor hover:text-mainColor hover:border-mainColor flex items-center justify-center whitespace-nowrap rounded-[42px] border border-solid px-[14px] py-2 text-white outline-none transition-[background,color] duration-300 ease-in-out hover:bg-transparent lg:px-5 lg:py-[11px];
+}
+
+.button-default {
+	@apply text-descM12 font-Montserrat lg:text-descM15 border-fillBg16 flex items-center justify-center whitespace-nowrap rounded-[42px] border border-solid bg-transparent px-[14px] py-2 text-white outline-none transition-[background,color] duration-300 ease-in-out hover:border-white hover:bg-transparent hover:text-white lg:px-5 lg:py-[11px];
+}
+
+.button-info {
+	@apply text-descM12 font-Montserrat lg:text-descM15 border-fillBg16 hover:border-fillBg8 hover:text-fillBg16 flex items-center justify-center whitespace-nowrap rounded-[42px] border border-solid bg-transparent px-[14px] py-2 text-white outline-none transition-[background,color] duration-300 ease-in-out hover:bg-transparent lg:px-5 lg:py-[11px];
+}
+
+.button-warning {
+	@apply text-descM12 font-Montserrat lg:text-descM15 flex items-center justify-center whitespace-nowrap rounded-[42px] border border-solid border-[yellow] bg-transparent px-[14px] py-2 text-white outline-none transition-[background,color] duration-300 ease-in-out hover:border-[yellow] hover:bg-transparent hover:text-[yellow] lg:px-5 lg:py-[11px];
+}
+
+.button-danger {
+	@apply text-descM12 font-Montserrat lg:text-descM15 flex items-center justify-center whitespace-nowrap rounded-[42px] border border-solid border-danger bg-transparent px-[14px] py-2 text-white outline-none transition-[background,color] duration-300 ease-in-out hover:border-danger hover:bg-transparent hover:text-danger lg:px-5 lg:py-[11px];
+}
+
+.button-link {
+	@apply text-descM12 font-Montserrat lg:text-descM15 flex items-center justify-center whitespace-nowrap rounded-[42px] border border-solid border-transparent bg-transparent px-[14px] py-2 text-white outline-none transition-[background,color] duration-300 ease-in-out hover:border-transparent hover:bg-transparent hover:text-white lg:px-5 lg:py-[11px];
+}

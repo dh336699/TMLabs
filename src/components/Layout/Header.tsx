@@ -40,39 +40,41 @@ const Header = () => {
     )
 
     return (
-        <Navbar
-            maxWidth="2xl"
-            classNames={{
-                wrapper: 'max-w-[1520px] h-[56px] px-4',
-            }}
-            isMenuOpen={isOpen}
-            height="56px"
-            onMenuOpenChange={onOpenChange}
-            isBlurred={false}
-        >
-            <NavbarBrand className="gap-4 cursor-pointer" onClick={() => router.push('/')}>
-                <Image
-                    width={44}
-                    height={24}
-                    src="/assets/logo.svg"
-                    alt="Nezha Quant"
-                />
-                <div className="text-xl text-primary md:text-xl">交易心理测评</div>
-            </NavbarBrand>
+        <div className="border-b-[0.5px] border-solid border-gray-800 sticky top-0 z-10 bg-black">
+            <Navbar
+                maxWidth="2xl"
+                classNames={{
+                    wrapper: 'max-w-[1520px] h-[80px] px-4',
+                }}
+                isMenuOpen={isOpen}
+                height="80px"
+                onMenuOpenChange={onOpenChange}
+                isBlurred={false}
+            >
+                <NavbarBrand className="gap-4 cursor-pointer" onClick={() => router.push('/')}>
+                    <Image
+                        width={44}
+                        height={24}
+                        src="/assets/logo.svg"
+                        alt="Nezha Quant"
+                    />
+                    <div className="text-xl text-primary md:text-xl font-bold">TMLabs - 全球首个AI交易心理测评平台</div>
+                </NavbarBrand>
 
-            <Dropdown>
-                <DropdownTrigger className="cursor-pointer">
-                    <FontAwesomeIcon icon={faBars} className="w-5 h-5 text-white" />
-                </DropdownTrigger>
-                <DropdownMenu aria-label="Change Languages">
-                    {
-                        languagesLabel.map(language => <DropdownItem key={language.lang}>{language.label}</DropdownItem>)
-                    }
-                </DropdownMenu>
-            </Dropdown>
+                <Dropdown>
+                    <DropdownTrigger className="cursor-pointer">
+                        <FontAwesomeIcon icon={faBars} className="w-5 h-5 text-white" />
+                    </DropdownTrigger>
+                    <DropdownMenu aria-label="Change Languages">
+                        {
+                            languagesLabel.map(language => <DropdownItem key={language.lang}>{language.label}</DropdownItem>)
+                        }
+                    </DropdownMenu>
+                </Dropdown>
 
-            <FontAwesomeIcon icon={faUser} onClick={() => router.push('/user-center')} className="w-5 h-5 text-white cursor-pointer" />
-        </Navbar>
+                <FontAwesomeIcon icon={faUser} onClick={() => router.push('/user-center')} className="w-5 h-5 text-white cursor-pointer" />
+            </Navbar>
+        </div>
     )
 }
 

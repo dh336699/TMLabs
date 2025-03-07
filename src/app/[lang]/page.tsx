@@ -28,21 +28,21 @@ export default function Home() {
       name: "王先生",
       role: "股票交易员",
       content: "通过TMLabs的心理分析，我意识到自己交易中的情绪波动问题。经过三个月的心理训练，我的年化收益率提高了23%。",
-      avatar: "https://via.placeholder.com/150"
+      avatar: "https://picsum.photos/200/200?random=1"
     },
     {
       id: 2,
       name: "李女士",
       role: "外汇交易者",
       content: "TMLabs帮助我克服了交易中的恐惧心理，现在我能够按照既定策略执行交易，不再因为情绪干扰而错失机会。",
-      avatar: "https://via.placeholder.com/150"
+      avatar: "https://picsum.photos/100/100?random=1"
     },
     {
       id: 3,
       name: "张先生",
       role: "期货交易员",
       content: "实时情绪监控系统真的很神奇，它能够提醒我何时应该暂停交易。这大大减少了我的冲动交易次数。",
-      avatar: "https://via.placeholder.com/150"
+      avatar: "https://picsum.photos/200/200?random=3"
     }
   ];
 
@@ -73,7 +73,7 @@ export default function Home() {
   return (
     <div>
       {/* 英雄区域 */}
-      <section className="bg-white py-16 md:py-24">
+      <section className="bg-black py-16 md:py-24">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center gap-10">
             <motion.div
@@ -82,10 +82,10 @@ export default function Home() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <h1 className="text-3xl md:text-5xl font-bold mb-4">
-                探索<span className="text-colorPrimary">交易心理</span>的奥秘，<br />掌握持续盈利的关键
+              <h1 className="text-3xl md:text-5xl font-bold mb-4 !leading-[1.2] text-white">
+                探索<span className="text-colorPrimary">交易心理</span>的奥秘，掌握持续盈利的关键
               </h1>
-              <p className="text-lg text-neutralPrimaryText mb-8 max-w-lg">
+              <p className="text-lg text-white/80 mb-8 max-w-lg">
                 通过科学的心理测评、实时情绪监控与专业训练，帮助交易者克服心理障碍，提升交易表现。
               </p>
               <motion.div
@@ -95,7 +95,7 @@ export default function Home() {
               >
                 <Link
                   href="/assessment"
-                  className="btn-primary px-6 py-3 inline-block"
+                  className="button-primary px-6 py-3 inline-block w-[280px]"
                 >
                   立即开始测评
                 </Link>
@@ -109,7 +109,7 @@ export default function Home() {
             >
               <div className="relative h-64 md:h-96 rounded-lg overflow-hidden shadow-xl">
                 <Image
-                  src="https://via.placeholder.com/800x600"
+                  src="/assets/banner.jpeg"
                   alt="交易心理分析"
                   width={800}
                   height={600}
@@ -273,7 +273,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="bg-gray-50 rounded-lg overflow-hidden shadow-md"
+                className="bg-fillBg8 rounded-lg overflow-hidden shadow-md"
               >
                 <div className="p-6">
                   <div className="flex justify-between items-center mb-3">
@@ -286,7 +286,7 @@ export default function Home() {
                     {article.title}
                   </h3>
                   <p className="text-gray-600 mb-4 text-sm">{article.excerpt}</p>
-                  <a href="#" className="text-red font-semibold hover:underline inline-flex items-center">
+                  <a href="#" className="text-mainColor font-semibold hover:underline inline-flex items-center">
                     阅读更多
                     <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                       <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd"></path>
@@ -309,16 +309,16 @@ export default function Home() {
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-2xl md:text-4xl font-bold mb-4">
+            <h2 className="text-2xl md:text-4xl font-bold mb-4 text-black">
               准备好提升您的交易表现了吗？
             </h2>
-            <p className="text-xl mb-8 max-w-3xl mx-auto">
+            <p className="text-xl mb-8 max-w-3xl mx-auto text-black/60">
               立即开始心理测评，发现影响你交易表现的核心因素，获取个性化改进方案。
             </p>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 href="/assessment"
-                className="inline-block px-8 py-4 bg-white text-red font-bold rounded-lg shadow-lg hover:bg-gray-100 transition-colors duration-300 transform"
+                className="button-primary inline-block px-8 py-4 bg-white text-red font-bold rounded-lg shadow-lg hover:bg-gray-100 transition-colors duration-300 transform"
               >
                 开始测评
               </Link>
