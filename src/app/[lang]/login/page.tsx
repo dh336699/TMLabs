@@ -2,8 +2,9 @@
 import { useCallback, useState } from 'react'
 import { Button, Input, Card, CardBody, CardHeader, Form } from '@heroui/react'
 import { httpRequest } from "@/utils/axios"
-import { isEmpty } from "lodash"
-import { redirect, useRouter } from "next/navigation"
+import { isEmpty, pick } from "lodash"
+import { useRouter } from "next/navigation"
+import { toast } from 'react-toastify'
 
 interface IUserInfo {
     avatar: string; email: string; id: number; nickname: string; phone: number;
@@ -28,17 +29,14 @@ export default function AuthPage() {
         let res: RequestDTO | undefined = undefined
         try {
             if (isLogin) {
-                res = await httpRequest<RequestDTO>('/auth/login', { data: formData, method: 'POST' })
+                res = await httpRequest<RequestDTO>('/auth/login', { data: pick(formData, ['username', 'password']), method: 'POST' })
             } else {
                 res = await httpRequest<RequestDTO>('/auth/register', { data: formData, method: 'POST' })
 
             }
             if (!isEmpty(res) && res.token) {
                 localStorage.setItem('token', res.token)
-                alert(isLogin ? '登录成功' : '注册成功')
-                setTimeout(() => {
-                    router.replace('/')
-                }, 300)
+                toast.success(isLogin ? '登录成功' : '注册成功', { autoClose: 300, onClose: () => router.replace('/') })
             }
         } catch (error) {
             console.error(error)

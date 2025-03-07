@@ -7,7 +7,6 @@ export default function HomePage() {
         data,
     } = useQuestionaires()
 
-
     return (
         <Carousel questionaires={data?.data || []} />
     )

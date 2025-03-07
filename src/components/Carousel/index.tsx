@@ -2,12 +2,15 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import { Card, CardHeader, CardBody, RadioGroup, Radio, Button } from "@heroui/react";
+import { Card, CardHeader, CardBody, RadioGroup, Radio, Button, Spinner } from "@heroui/react";
 import { usePrevNextButtons } from "@/hooks/usePrevNextButtons";
 import { IQuestionaireItem } from "@/model/question";
 import { isEmpty } from "lodash";
 import { useTranslation } from "@/i18n/client";
 import { httpRequest } from "@/utils/axios";
+import { LoadingIcon } from "../General";
+import { createBehaviorGiagram, postAnswer } from "@/api/questions";
+import { toast } from "react-toastify";
 
 const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[] }) => {
     const { t } = useTranslation('question')
@@ -50,8 +53,14 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[] }) => 
     }, [answers, setAnswers, questionaires, curIdx])
 
     const handleSubmit = useCallback(async () => {
-        const res = await httpRequest('/survey/responses', { data: answers, method: 'POST' })
-        console.log(res);
+        try {
+            await postAnswer(answers)
+            toast.success('提交成功, 正在生成交易习惯分析报告', { autoClose: 1000 })
+            const res = await createBehaviorGiagram()
+            toast.success(res.message, { autoClose: 1000 })
+        } catch (error) {
+            console.log(error)
+        }
     }, [answers])
 
     const isFirst = useMemo(() => {
@@ -83,12 +92,13 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[] }) => 
         }
     }, [answers])
 
-    return (
-        <div className="xxs:w-[300px] md:w-auto max-w-[1024px] min-h-[400px] pt-12 overflow-hidden mx-auto" >
+    return <div className="xxs:w-[300px] md:w-auto max-w-[1024px] min-h-[400px] pt-12 overflow-hidden mx-auto" >
+        {!isEmpty(questionaires) && <div>
+            <p className="text-center text-md font-medium mb-2">第 {curIdx + 1} / {questionaires?.length}题</p>
             <div className="w-full h-full" ref={emblaRef}>
                 <div className="flex">
-                    {questionaires?.length > 0 && questionaires.map((question) => (
-                        <Card key={question.id} style={{ flex: '0 0 90%', margin: '0 20px', padding: '0 20px' }}>
+                    {questionaires.map((question) => (
+                        <Card style={{ flex: '0 0 90%', margin: '0 20px', padding: '0 20px' }} key={question.id}>
                             <CardHeader className="pb-0 py-4 px-4 flex-col items-start">
                                 <h2 className="font-bold">{question.title}</h2>
                             </CardHeader>
@@ -96,9 +106,8 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[] }) => 
                                 <RadioGroup onValueChange={handleSelectAnswer}>
                                     {
                                         !isEmpty(question.options) ? question.options.map(option => (
-                                            <Radio value={option.id as string} key={option.id}>{option.content}</Radio>
+                                            <Radio key={option.id} value={option.id as string}>{option.content}</Radio>
                                         )) : null
-
                                     }
                                 </RadioGroup>
 
@@ -106,9 +115,7 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[] }) => 
                         </Card>
                     ))}
                 </div>
-            </div>
-            {
-                !isEmpty(questionaires) && <div className="mt-[4rem] flex justify-between">
+                <div className="mt-[4rem] flex justify-between">
                     {
                         !isFirst ? <Button onPress={onPrevButtonClick}>{t('上一题')}</Button> : <div></div>
                     }
@@ -119,9 +126,11 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[] }) => 
                         !isLast && <Button color="primary" isDisabled={isDisabledClick} className="justify-self-end" onPress={onNextButtonClick}>{t('下一题')}</Button>
                     }
                 </div>
-            }
-
-        </div>
-    )
+            </div>
+        </div>}
+        {
+            isEmpty(questionaires) && <LoadingIcon />
+        }
+    </div>
 }
 export default Carousel

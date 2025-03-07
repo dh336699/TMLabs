@@ -1,7 +1,8 @@
 import { useCustomSWR } from "@/hooks/useCustomSWR"
 import { QuestionaireDTO } from "@/model/question"
+import { httpRequest } from "@/utils/axios"
 
-const useQuestionaires = () => {
+export const useQuestionaires = () => {
     const {
         data,
         error,
@@ -18,5 +19,6 @@ const useQuestionaires = () => {
         mutate
     }
 }
+export const postAnswer = (data: { question_id: number | string; selected_option_ids: string[] }[]) => httpRequest('/survey/responses', { data, method: 'POST' })
 
-export { useQuestionaires }
+export const createBehaviorGiagram = () => httpRequest('/survey/generate-report', { method: 'POST' })
