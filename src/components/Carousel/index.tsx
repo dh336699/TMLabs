@@ -5,7 +5,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import { Card, CardHeader, CardBody, RadioGroup, Radio, Button } from "@heroui/react";
 import { usePrevNextButtons } from "@/hooks/usePrevNextButtons";
 import { IQuestionaireItem } from "@/model/question";
-import { isEmpty, method } from "lodash";
+import { isEmpty } from "lodash";
 import { useTranslation } from "@/i18n/client";
 import { httpRequest } from "@/utils/axios";
 
@@ -18,8 +18,7 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[] }) => 
         skipSnaps: true,
         watchDrag: false
     })
-    const { prevBtnDisabled,
-        nextBtnDisabled,
+    const {
         onPrevButtonClick,
         onNextButtonClick } = usePrevNextButtons(emblaApi)
 
@@ -89,7 +88,7 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[] }) => 
             <div className="w-full h-full" ref={emblaRef}>
                 <div className="flex">
                     {questionaires?.length > 0 && questionaires.map((question) => (
-                        <Card style={{ flex: '0 0 90%', margin: '0 20px', padding: '0 20px' }}>
+                        <Card key={question.id} style={{ flex: '0 0 90%', margin: '0 20px', padding: '0 20px' }}>
                             <CardHeader className="pb-0 py-4 px-4 flex-col items-start">
                                 <h2 className="font-bold">{question.title}</h2>
                             </CardHeader>
@@ -97,7 +96,7 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[] }) => 
                                 <RadioGroup onValueChange={handleSelectAnswer}>
                                     {
                                         !isEmpty(question.options) ? question.options.map(option => (
-                                            <Radio value={option.id as string}>{option.content}</Radio>
+                                            <Radio value={option.id as string} key={option.id}>{option.content}</Radio>
                                         )) : null
 
                                     }

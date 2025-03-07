@@ -1,0 +1,40 @@
+:root {
+  --brand-base: #1b76e2;
+  --base-bg: #FFFFFF;
+  --base-text: #1A1A1A;
+  --base-border: #333;
+  --secondary: #919191;
+  --fill-bg: #F6F6F6;
+  --fill-bg-8: rgba(246, 246, 246, 0.8);
+  --fill-bg-16: rgba(246, 246, 246, 0.16);
+  --fill-bg-40: rgba(246, 246, 246, 0.4);
+  --fill-black-15: rgba(0, 0, 0, 0.15);
+  --main-color: #FA9D2B;
+  --secondary-main-color: #FFB854;
+  --main-color-60: rgba(250, 157, 43, 0.6);
+  --secondary-main-text-color: #D47A19;
+  --dark-gray: #434343;
+  --light-gray: #919191;
+  --dark-bg: #1A1A1A;
+  --danger: #F55D6E;
+  --neutral-hover-bg: #FAFAFA;
+  --border-color: #E1E1E1;
+  --tag-warning-bg: #FFF2E8;
+  --tag-success-bg: #E6F7FF;
+  --tag-danger-bg: #FFF1F0;
+  --tag-primary-bg: #F9F0FF;
+  --tag-secondary-bg: #F0F5FF;
+  --tag-warning-text: #FA9D2B;
+  --tag-success-text: #1890FF;
+  --tag-danger-text: #F55D6E;
+  --tag-primary-text: #722ED1;
+  --tag-secondary-text: #2F54EB;
+  --toastify-container-width: auto;
+  --toastify-toast-width: auto;
+  --toastify-toast-min-height: 34px;
+  --toastify-toast-padding: 8px 12px;
+}
+
+.dark-theme {
+  --brand-base: #136dd7;
+}

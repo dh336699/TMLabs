@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import '../../styles/globals.scss'
+import '../../styles/theme.css'
 
 import { Geist, Geist_Mono } from 'next/font/google'
 
@@ -7,6 +8,8 @@ import Launch from '@/components/Launch'
 import { serverTranslate } from '@/i18n/server'
 
 import { HeroUIProviders } from './HeroUIProvider'
+import Header from '@/components/Layout/Header'
+import Footer from '@/components/Layout/Footer'
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -40,7 +43,9 @@ export default async function RootLayout({
                 <Launch lang={lang} />
 
                 <HeroUIProviders>
+                    <Header />
                     {children}
+                    <Footer />
                 </HeroUIProviders>
             </body>
         </html>
