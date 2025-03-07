@@ -1,14 +1,14 @@
 import type { Metadata } from 'next'
-import '../../styles/globals.css'
-import '../../styles/theme.css'
+import '@/styles/globals.css'
+import '@/styles/theme.css'
+import { ToastContainer } from "react-toastify";
 
 import { Geist, Geist_Mono } from 'next/font/google'
-
-import { serverTranslate } from '@/i18n/server'
 
 import { HeroUIProviders } from './HeroUIProvider'
 import Header from '@/components/Layout/Header'
 import Footer from '@/components/Layout/Footer'
+import GlobalContexrProvider from "./GlobalContexrProvider";
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -27,23 +27,21 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
     children,
-    params,
 }: Readonly<{
     children: React.ReactNode
-    params: Promise<{ lang: string }>
 }>) {
-    const lang = (await params).lang
-
-    serverTranslate(lang, 'common')
 
     return (
         <html lang="en">
             <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-            <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+            <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-full`}>
+                <ToastContainer autoClose={2000} />
                 <HeroUIProviders>
-                    <Header />
-                    {children}
-                    <Footer />
+                    <GlobalContexrProvider>
+                        <Header />
+                        {children}
+                        <Footer />
+                    </GlobalContexrProvider>
                 </HeroUIProviders>
             </body>
         </html>

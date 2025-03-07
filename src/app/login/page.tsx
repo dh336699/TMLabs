@@ -1,10 +1,12 @@
 'use client'
-import { useCallback, useState } from 'react'
+import { useCallback, useContext, useState } from 'react'
 import { Button, Input, Card, CardBody, CardHeader, Form } from '@heroui/react'
 import { httpRequest } from "@/utils/axios"
 import { isEmpty, pick } from "lodash"
 import { useRouter } from "next/navigation"
 import { toast } from 'react-toastify'
+import { GlobalContext } from "../GlobalContexrProvider"
+import { createBehaviorGiagram, postAnswer } from "@/api/questions"
 
 interface IUserInfo {
     avatar: string; email: string; id: number; nickname: string; phone: number;
@@ -24,6 +26,7 @@ export default function AuthPage() {
         password: '',
     })
     const router = useRouter()
+    const { data: { accessmentCompleted } } = useContext(GlobalContext)
 
     const handleSubmit = useCallback(async () => {
         let res: RequestDTO | undefined = undefined
@@ -36,7 +39,22 @@ export default function AuthPage() {
             }
             if (!isEmpty(res) && res.token) {
                 localStorage.setItem('token', res.token)
-                toast.success(isLogin ? '登录成功' : '注册成功', { autoClose: 300, onClose: () => router.replace('/') })
+                // 答题时跳过来登录，登录成功后生成报告然后直接跳转到用户中心
+                if (accessmentCompleted) {
+                    toast.success('登录成功, 正在生成交易习惯分析报告..')
+                    const answers = localStorage.getItem('answers') ? JSON.parse(localStorage.getItem('answers') as string) : []
+                    if (isEmpty(answers)) {
+                        toast.error('答案为空, 需要重新答题哦', { autoClose: 1000, onClose: () => router.replace('/') })
+                    } else {
+                        await postAnswer(answers)
+                        toast.success('提交成功, 正在生成交易习惯分析报告', { autoClose: 1000 })
+                        const res = await createBehaviorGiagram()
+                        toast.success(res.message, { autoClose: 1000 })
+                        router.replace('/user-center')
+                    }
+                } else {
+                    toast.success(isLogin ? '登录成功' : '注册成功', { autoClose: 300, onClose: () => router.replace('/') })
+                }
             }
         } catch (error) {
             console.error(error)

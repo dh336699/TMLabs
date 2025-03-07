@@ -19,6 +19,12 @@ export const useQuestionaires = () => {
         mutate
     }
 }
-export const postAnswer = (data: { question_id: number | string; selected_option_ids: string[] }[]) => httpRequest('/survey/responses', { data, method: 'POST' })
+export const postAnswer = (responses: { question_id: number | string; selected_option_ids: string[] }[]) => httpRequest('/survey/responses', { data: { responses }, method: 'POST' })
 
-export const createBehaviorGiagram = () => httpRequest('/survey/generate-report', { method: 'POST' })
+interface ReportResponse {
+  message: string;
+  report_id: number;
+  report_name: string;
+  download_url: string;
+}
+export const createBehaviorGiagram = () => httpRequest<ReportResponse>('/survey/generate-report', { method: 'POST' })

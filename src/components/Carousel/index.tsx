@@ -6,15 +6,13 @@ import { Card, CardHeader, CardBody, RadioGroup, Radio, Button, Spinner } from "
 import { usePrevNextButtons } from "@/hooks/usePrevNextButtons";
 import { IQuestionaireItem } from "@/model/question";
 import { isEmpty } from "lodash";
-import { useTranslation } from "@/i18n/client";
-import { httpRequest } from "@/utils/axios";
 import { LoadingIcon } from "../General";
 import { createBehaviorGiagram, postAnswer } from "@/api/questions";
 import { toast } from "react-toastify";
 
-const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[] }) => {
-    const { t } = useTranslation('question')
+const Carousel = ({ questionaires, setData }: { questionaires: IQuestionaireItem[]; setData: (data: any) => void }) => {
     const [curIdx, setCurIds] = useState(0)
+    const [loading, setLoading] = useState(false)
     const [answers, setAnswers] = useState<{ question_id: number | string; selected_option_ids: string[] }[]>([])
 
     const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -26,6 +24,9 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[] }) => 
         onNextButtonClick } = usePrevNextButtons(emblaApi)
 
     const isDisabledClick = useMemo(() => {
+        if (loading) {
+            return true
+        }
         if (!isEmpty(questionaires)) {
             const question = questionaires[curIdx]
             const answer = answers.find(a => a.question_id === question.id)
@@ -37,7 +38,7 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[] }) => 
         } else {
             return true
         }
-    }, [questionaires, curIdx, answers])
+    }, [questionaires, curIdx, answers, loading])
 
     const handleSelectAnswer = useCallback((value: string) => {
         const questionId = questionaires[curIdx].id
@@ -54,12 +55,20 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[] }) => 
 
     const handleSubmit = useCallback(async () => {
         try {
+            setLoading(true)
+            setData({ accessmentCompleted: true })
             await postAnswer(answers)
-            toast.success('提交成功, 正在生成交易习惯分析报告', { autoClose: 1000 })
             const res = await createBehaviorGiagram()
             toast.success(res.message, { autoClose: 1000 })
+            if (res.download_url) {
+                window.location.href = res.download_url; // 直接触发下载
+            } else {
+                console.error('未获取到下载链接');
+            }
         } catch (error) {
             console.log(error)
+        } finally {
+            setLoading(false)
         }
     }, [answers])
 
@@ -88,11 +97,13 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[] }) => 
 
     useEffect(() => {
         if (!isEmpty(answers)) {
-            localStorage.setItem('answers', JSON.stringify(answers))
+            requestAnimationFrame(() => {
+                localStorage.setItem('answers', JSON.stringify(answers))
+            })
         }
     }, [answers])
 
-    return <div className="xxs:w-[300px] md:w-auto max-w-[1024px] min-h-[400px] pt-12 overflow-hidden mx-auto" >
+    return <div className="relative md:min-w-[600px] min-h-[400px] pt-12 overflow-hidden" >
         {!isEmpty(questionaires) && <div>
             <p className="text-center text-md font-medium mb-2">第 {curIdx + 1} / {questionaires?.length}题</p>
             <div className="w-full h-full" ref={emblaRef}>
@@ -115,17 +126,18 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[] }) => 
                         </Card>
                     ))}
                 </div>
-                <div className="mt-[4rem] flex justify-between">
-                    {
-                        !isFirst ? <Button onPress={onPrevButtonClick}>{t('上一题')}</Button> : <div></div>
-                    }
-                    {
-                        isLast && <Button color="primary" isDisabled={isDisabledClick} onPress={handleSubmit}>{t('结束答题')}</Button>
-                    }
-                    {
-                        !isLast && <Button color="primary" isDisabled={isDisabledClick} className="justify-self-end" onPress={onNextButtonClick}>{t('下一题')}</Button>
-                    }
-                </div>
+            </div>
+            {loading && <Spinner className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />}
+            <div className="mt-[4rem] flex justify-between">
+                {
+                    !isFirst ? <Button isDisabled={loading} onPress={onPrevButtonClick}>上一题</Button> : <div></div>
+                }
+                {
+                    isLast && <Button color="primary" isDisabled={isDisabledClick} onPress={handleSubmit}>结束答题</Button>
+                }
+                {
+                    !isLast && <Button color="primary" isDisabled={isDisabledClick} className="justify-self-end" onPress={onNextButtonClick}>下一题</Button>
+                }
             </div>
         </div>}
         {

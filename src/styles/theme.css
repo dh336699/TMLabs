@@ -29,10 +29,11 @@
   --tag-danger-text: #F55D6E;
   --tag-primary-text: #722ED1;
   --tag-secondary-text: #2F54EB;
-  --toastify-container-width: auto;
+  --toastify-toast-width: auto;
+  /* --toastify-container-width: auto;
   --toastify-toast-width: auto;
   --toastify-toast-min-height: 34px;
-  --toastify-toast-padding: 8px 12px;
+  --toastify-toast-padding: 8px 12px; */
 }
 
 .dark-theme {

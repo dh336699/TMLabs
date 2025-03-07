@@ -22,7 +22,7 @@ export default function ProfilePage() {
 
                     <div className="flex-1 text-center sm:text-left">
                         <div className="flex items-center justify-center sm:justify-start gap-2 mb-2">
-                            <h1 className="text-2xl font-bold">前端开发者小明</h1>
+                            <h1 className="text-2xl font-bold">港美交易者</h1>
                             <FontAwesomeIcon
                                 icon={faLock}
                                 className="text-gray-500 text-sm"

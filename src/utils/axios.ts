@@ -5,8 +5,7 @@ import { isEmpty } from 'lodash'
 
 type FetcherConfig = AxiosRequestConfig & {
 	// 自定义扩展配置
-	ignoreError?: boolean // 是否忽略全局错误处理
-	retryCount?: number // 自定义重试次数
+	ignoreError?: boolean; // 是否忽略全局错误处理
 }
 
 export const httpRequest = async <Data = any>(
