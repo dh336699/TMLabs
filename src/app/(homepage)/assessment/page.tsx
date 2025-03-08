@@ -1,7 +1,7 @@
 "use client";
 import { useQuestionaires } from "@/api/questions";
 import Carousel from "@/components/Carousel"
-import { GlobalContext } from "../GlobalContexrProvider";
+import { GlobalContext } from "../../GlobalContexrProvider";
 import { useContext } from "react";
 
 export default function HomePage() {

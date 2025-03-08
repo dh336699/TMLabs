@@ -38,9 +38,7 @@ export default async function RootLayout({
                 <ToastContainer autoClose={2000} />
                 <HeroUIProviders>
                     <GlobalContexrProvider>
-                        <Header />
                         {children}
-                        <Footer />
                     </GlobalContexrProvider>
                 </HeroUIProviders>
             </body>

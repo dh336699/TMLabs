@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import Header from "@/components/Layout/Header";
+import Footer from "@/components/Layout/Footer";
 
 // 定义数据类型
 interface Testimonial {
@@ -72,6 +74,7 @@ export default function Dashboard() {
 
     return (
         <div>
+            <Header />
             {/* 英雄区域 */}
             <section className="bg-black py-16 md:py-24">
                 <div className="container mx-auto px-6">
@@ -326,6 +329,7 @@ export default function Dashboard() {
                     </motion.div>
                 </div>
             </section>
+            <Footer />
         </div>
     );
 } 
