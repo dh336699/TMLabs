@@ -1,9 +1,11 @@
 'use client'
-import { Card, Avatar, Button, Divider, Listbox, ListboxItem } from '@heroui/react'
+import { Card, Avatar, Button, Listbox, ListboxItem } from '@heroui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faPlus, faBook } from '@fortawesome/free-solid-svg-icons'
 import { downloadReport, IReportItem, useReportList } from "@/api/user-center"
 import { isEmpty } from "lodash"
+import { downloadFile } from "@/utils/download"
+import { toast } from "react-toastify"
 
 export default function ProfilePage() {
     const stats = [
@@ -14,7 +16,8 @@ export default function ProfilePage() {
     const { data: reportList } = useReportList()
 
     const handleDownload = async (report: IReportItem) => {
-        await downloadReport(report.id)
+        const res = await downloadReport(report.id)
+        toast.success(res.message, { onClose: () => downloadFile({ url: res.download_url }) })
     }
 
     return (

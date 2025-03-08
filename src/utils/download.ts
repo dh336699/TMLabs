@@ -1,21 +1,21 @@
 import { httpRequest } from "./axios";
 
-const downloadFile = ({url, cors = false}: { url: string; cors?: boolean}) => {
+const downloadFile = ({url, cors = false, fileName = '分析报告.pdf'}: { url: string; cors?: boolean; fileName?: string }) => {
     if (!cors) {
-        dowloadWithAnchor(url)
+        dowloadWithAnchor(url, fileName)
     } else {
-        downloadWithToken(url)
+        downloadWithToken(url, fileName)
     }
 }
 
-const downloadWithToken = async (url: string) => {
+const downloadWithToken = async (url: string, fileName: string) => {
     try {
         const fileResponse = await httpRequest(url);
 
         const blob = await fileResponse.blob();
 
         const downloadUrl = window.URL.createObjectURL(blob);
-        dowloadWithAnchor(downloadUrl)
+        dowloadWithAnchor(downloadUrl, fileName)
         
         window.URL.revokeObjectURL(downloadUrl);
     } catch (error) {
@@ -23,11 +23,11 @@ const downloadWithToken = async (url: string) => {
     }
 }
 
-const dowloadWithAnchor = async (downloadUrl:string) => {
+const dowloadWithAnchor = async (downloadUrl:string, fileName: string) => {
 try {
     const anchor = document.createElement('a');
     anchor.href = downloadUrl;
-    anchor.download = '分析报告.pdf'; // 强制指定文件名
+    anchor.download = fileName; // 强制指定文件名
     
     // 4. 触发下载
     document.body.appendChild(anchor);
