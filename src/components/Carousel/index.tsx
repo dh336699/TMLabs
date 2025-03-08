@@ -103,17 +103,17 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[]; }) =>
         }
     }, [answers])
 
-    return <div className="relative md:min-w-[600px] min-h-[400px] pt-12 overflow-hidden" >
-        {!isEmpty(questionaires) && <div>
+    return <div className="relative md:min-w-[600px] min-h-[400px] overflow-hidden" >
+        {!isEmpty(questionaires) && <>
             <p className="text-center text-md font-medium mb-2">第 {curIdx + 1} / {questionaires?.length}题</p>
-            <div className="w-full h-full" ref={emblaRef}>
+            <div className="w-full h-full" ref={emblaRef} >
                 <div className="flex">
                     {questionaires.map((question) => (
-                        <Card style={{ flex: '0 0 90%', margin: '0 20px', padding: '0 20px' }} key={question.id}>
-                            <CardHeader className="pb-0 py-4 px-4 flex-col items-start">
+                        <div style={{ flex: '0 0 90%' }} className="mx-5 px-5  bg-white rounded-xl border-2 border-gray-100 hover:border-gray-200 transition-all duration-300 group cursor-pointer" key={question.id}>
+                            <div className="py-4 flex-col items-start">
                                 <h2 className="font-bold">{question.title}</h2>
-                            </CardHeader>
-                            <CardBody className="overflow-visible py-2 pb-6">
+                            </div>
+                            <div className="py-2 pb-6">
                                 <RadioGroup onValueChange={handleSelectAnswer}>
                                     {
                                         !isEmpty(question.options) ? question.options.map(option => (
@@ -122,8 +122,8 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[]; }) =>
                                     }
                                 </RadioGroup>
 
-                            </CardBody>
-                        </Card>
+                            </div>
+                        </div>
                     ))}
                 </div>
             </div>
@@ -139,7 +139,7 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[]; }) =>
                     !isLast && <Button color="primary" isDisabled={isDisabledClick} className="justify-self-end" onPress={onNextButtonClick}>下一题</Button>
                 }
             </div>
-        </div>}
+        </>}
         {
             isEmpty(questionaires) && <LoadingIcon />
         }

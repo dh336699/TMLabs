@@ -2,7 +2,7 @@
 import { Card, Avatar, Button, Divider, Listbox, ListboxItem } from '@heroui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faPlus, faBook } from '@fortawesome/free-solid-svg-icons'
-import { useReportList } from "@/api/user-center"
+import { downloadReport, IReportItem, useReportList } from "@/api/user-center"
 import { isEmpty } from "lodash"
 
 export default function ProfilePage() {
@@ -12,7 +12,10 @@ export default function ProfilePage() {
     ]
 
     const { data: reportList } = useReportList()
-    console.log(reportList);
+
+    const handleDownload = async (report: IReportItem) => {
+        await downloadReport(report.id)
+    }
 
     return (
         <div className="max-w-4xl mx-auto p-4 sm:p-6">
@@ -20,7 +23,7 @@ export default function ProfilePage() {
             <Card className="mb-6">
                 <div className="flex flex-col sm:flex-row items-center gap-6 p-4">
                     <Avatar
-                        src="/avatar.jpg"
+                        src="/assets/avatar.jpg"
                         className="w-24 h-24 text-3xl"
                         name="User"
                     />
@@ -57,43 +60,26 @@ export default function ProfilePage() {
                             <FontAwesomeIcon icon={faPlus} className="mr-2" />
                             添加个人介绍
                         </Button>
-                        <p className="text-sm text-gray-500 mt-2">参考案例：资深前端工程师 | 开源爱好者</p>
                     </div>
                 </div>
             </Card>
 
-            <Card className="mb-6 p-2">
-                {reportList && !isEmpty(reportList.data) ? <Listbox aria-label="Actions" onAction={(key) => alert(key)}>
-                    {
-                        reportList && reportList.data!.map(report => <ListboxItem key={report.id}>
-                            <div className="flex items-center">
-                                <p className="mr-2 text-sm ">{report.report_name}</p>
-                                <Button color="primary" variant="light" size="sm">
-                                    点击下载
-                                </Button>
-                            </div></ListboxItem>)
-                    }
-                </Listbox> : <p>暂无</p>}
-            </Card>
-
-            {/* 知识库区块 */}
-            <Card>
-                <div className="p-4">
-                    <h2 className="text-xl font-semibold mb-4">知识库</h2>
-                    <Divider className="mb-4" />
-                    <div className="min-h-[200px] flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-4">
-                        <Button
-                            color="primary"
-                            variant="bordered"
-                            className="text-blue-600"
-                        >
-                            <FontAwesomeIcon icon={faBook} className="mr-2" />
-                            添加公开知识库
-                        </Button>
-                        <p className="text-sm text-gray-500 mt-2">从现有仓库导入或新建知识库</p>
-                    </div>
-                </div>
-            </Card>
+            <div>
+                <p className="text-l text-medium mb-3">报告列表</p>
+                <Card className="mb-6 p-2">
+                    {reportList && !isEmpty(reportList.data) ? <Listbox shouldHighlightOnFocus={false} aria-label="Actions">
+                        {
+                            reportList && reportList.data!.map(report => <ListboxItem key={report.id}>
+                                <div className="flex items-center">
+                                    <p className="mr-2 text-sm ">{report.report_name}</p>
+                                    <Button color="primary" variant="light" size="sm" onPress={() => handleDownload(report)}>
+                                        点击下载
+                                    </Button>
+                                </div></ListboxItem>)
+                        }
+                    </Listbox> : <p>暂无</p>}
+                </Card>
+            </div>
         </div>
     )
 }

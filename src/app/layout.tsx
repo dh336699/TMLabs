@@ -38,7 +38,9 @@ export default async function RootLayout({
                 <ToastContainer autoClose={2000} />
                 <HeroUIProviders>
                     <GlobalContexrProvider>
-                        {children}
+                        <div className="min-h-screen flex flex-col justify-between">
+                            {children}
+                        </div>
                     </GlobalContexrProvider>
                 </HeroUIProviders>
             </body>

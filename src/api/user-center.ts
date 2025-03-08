@@ -1,7 +1,8 @@
 import { useCustomSWR } from "@/hooks/useCustomSWR"
 import { IPagination } from "@/model/common"
+import { httpRequest } from "@/utils/axios"
 
-interface IReportItem {
+export interface IReportItem {
     id: number
     report_name: string
     report_summary: string
@@ -19,7 +20,7 @@ export const useReportList = () => {
         isLoading,
         isEmpty,
         mutate
-    } = useCustomSWR<IReportDTO>('/survey/reports')
+    } = useCustomSWR<IReportDTO>('/survey/reports?limit=3&page=1')
 
     return {
         data,
@@ -29,3 +30,5 @@ export const useReportList = () => {
         mutate
     }
 }
+// 下载报告
+export const downloadReport = (reportId: number) => httpRequest(`/survey/reports/${reportId}/download`, { method: 'GET' })

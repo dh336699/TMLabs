@@ -9,7 +9,7 @@ export default function HomePage() {
 
 
     return (
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center pt-12 pb-12">
             <Carousel questionaires={data?.data || []} />
         </div>
     )

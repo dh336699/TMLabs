@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import { toast } from 'react-toastify'
 import { createBehaviorDiagram, postAnswer } from "@/api/questions"
 import { classnames } from "@/utils/classnames"
+import { downloadFile } from "@/utils/download"
 
 interface IUserInfo {
     avatar: string; email: string; id: number; nickname: string; phone: number;
@@ -35,7 +36,7 @@ export default function AuthPage() {
             } else {
                 await postAnswer(answers)
                 const res = await createBehaviorDiagram()
-                toast.success(res.message)
+                toast.success(res.message, { onClose: () => downloadFile({ url: res.download_url }) })
                 router.replace('/user-center')
             }
         } catch (error) {
