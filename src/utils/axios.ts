@@ -33,13 +33,12 @@ export const httpRequest = async <Data = any>(
 
 axios.interceptors.response.use(
 	(response) => {
-		// 统一处理响应数据格式
-		if (response.data?.code && response.data?.code !== 0) {
-			return Promise.reject(response.data)
-		}
-		if (response.status === 200) {
+        
+		if (response.status >= 200 && response.status < 300) {
 			return !isEmpty(response.data) ? response.data : response
-		}
+		} else {
+            return Promise.reject(response.data)
+        }
 	},
 	(error) => Promise.reject(error),
 )

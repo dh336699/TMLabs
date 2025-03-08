@@ -2,19 +2,21 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import { Card, CardHeader, CardBody, RadioGroup, Radio, Button, Spinner } from "@heroui/react";
+import { RadioGroup, Radio, Button, Spinner } from "@heroui/react";
 import { usePrevNextButtons } from "@/hooks/usePrevNextButtons";
 import { IQuestionaireItem } from "@/model/question";
 import { isEmpty } from "lodash";
 import { LoadingIcon } from "../General";
 import { createBehaviorDiagram, postAnswer } from "@/api/questions";
 import { toast } from "react-toastify";
+import { downloadFile } from "@/utils/download";
+import { useRouter } from "next/navigation";
 
 const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[]; }) => {
     const [curIdx, setCurIds] = useState(0)
     const [loading, setLoading] = useState(false)
     const [answers, setAnswers] = useState<{ question_id: number | string; selected_option_ids: string[] }[]>([])
-
+    const router = useRouter()
     const [emblaRef, emblaApi] = useEmblaCarousel({
         skipSnaps: true,
         watchDrag: false
@@ -59,9 +61,13 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[]; }) =>
             sessionStorage.setItem('accessmentCompleted', '1')
             await postAnswer(answers)
             const res = await createBehaviorDiagram()
-            toast.success(res.message)
             if (res.download_url) {
-                window.location.href = res.download_url; // 直接触发下载
+                toast.success('正在下载中', {
+                    onOpen: () => downloadFile({
+                        url: res.download_url, baseURL: process.env.NEXT_PUBLIC_API_DOWN_PREFIX,
+                        cors: true, fileName: res.report_name || '性格分析报告', cb: () => router.replace('/user-center')
+                    })
+                })
             } else {
                 console.error('未获取到下载链接');
             }
@@ -103,7 +109,7 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[]; }) =>
         }
     }, [answers])
 
-    return <div className="relative md:min-w-[600px] min-h-[400px] overflow-hidden" >
+    return <div className="relative md:w-[600px] min-h-[400px] overflow-hidden" >
         {!isEmpty(questionaires) && <>
             <p className="text-center text-md font-medium mb-2">第 {curIdx + 1} / {questionaires?.length}题</p>
             <div className="w-full h-full" ref={emblaRef} >

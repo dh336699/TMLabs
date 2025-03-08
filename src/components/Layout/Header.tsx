@@ -20,14 +20,6 @@ const Header = () => {
     const { lang } = useParams<{ lang: string }>()
     const router = useRouter()
 
-    // const switchLang = useCallback(() => {
-    //     const search = searchParams.toString()
-
-    //     router.replace(
-    //         `/${lang === 'zh-CN' ? 'en' : 'zh-CN'}/${pathname.split('/').slice(2).join('/')}${search ? `?${search}` : ''}`,
-    //     )
-    // }, [searchParams, router, lang, pathname])
-
     const isActive = useCallback(
         (name: string) => {
             const _pathname = pathname.replace(`/${lang}`, '')
@@ -58,8 +50,9 @@ const Header = () => {
                     <div className="text-xl text-primary md:text-xl font-bold hidden md:inline-block">TMLabs - 全球首个AI交易心理测评平台</div>
                     <div className="text-xl text-primary md:text-xl font-bold inline-block md:hidden">TMLabs</div>
                 </NavbarBrand>
-
-                <FontAwesomeIcon icon={faUser} onClick={() => router.push('/user-center')} className="w-5 h-5 text-white cursor-pointer" />
+                {
+                    localStorage.getItem('token') ? <FontAwesomeIcon icon={faUser} onClick={() => router.push('/user-center')} className="w-5 h-5 text-white cursor-pointer" /> : null
+                }
             </Navbar>
         </div>
     )

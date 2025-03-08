@@ -16,12 +16,12 @@ export default function ProfilePage() {
     const { data: reportList } = useReportList()
 
     const handleDownload = async (report: IReportItem) => {
-        const res = await downloadReport(report.id)
-        toast.success(res.message, { onClose: () => downloadFile({ url: res.download_url }) })
+        const url = `/survey/reports/${report.id}/download`
+        toast.success('正在下载中', { onOpen: () => downloadFile({ url, cors: true }) })
     }
 
     return (
-        <div className="max-w-4xl mx-auto p-4 sm:p-6">
+        <div className="md:w-[80vw] mx-auto p-4 sm:p-6">
             {/* 个人信息头部 */}
             <Card className="mb-6">
                 <div className="flex flex-col sm:flex-row items-center gap-6 p-4">

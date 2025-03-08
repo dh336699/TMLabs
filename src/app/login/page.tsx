@@ -28,22 +28,6 @@ export default function AuthPage() {
     })
     const router = useRouter()
 
-    const generateReport = async () => {
-        try {
-            const answers = localStorage.getItem('answers') ? JSON.parse(localStorage.getItem('answers') as string) : []
-            if (isEmpty(answers)) {
-                toast.error('答案为空, 需要重新答题哦', { onClose: () => router.replace('/') })
-            } else {
-                await postAnswer(answers)
-                const res = await createBehaviorDiagram()
-                toast.success(res.message, { onClose: () => downloadFile({ url: res.download_url }) })
-                router.replace('/user-center')
-            }
-        } catch (error) {
-            toast.error('生成失败，请在个人中心重新生成', { onClose: () => router.replace('/user-center') })
-        }
-    }
-
     const handleSubmit = useCallback(async () => {
         let res: RequestDTO | undefined = undefined
         try {
@@ -53,11 +37,14 @@ export default function AuthPage() {
                 res = await httpRequest<RequestDTO>('/auth/register', { data: formData, method: 'POST' })
 
             }
+            console.log(res);
+
             if (!isEmpty(res) && res.token) {
                 localStorage.setItem('token', res.token)
                 // 答题时跳过来登录，登录成功后生成报告然后直接跳转到用户中心
                 if (sessionStorage.getItem('accessmentCompleted')) {
-                    toast.success('登录成功, 正在生成交易习惯分析报告', { onClose: generateReport, delay: 1000 })
+                    toast.success(isLogin ? '登录成功' : '注册成功', { onClose: () => router.replace('/user-center') })
+                    sessionStorage.removeItem('accessmentCompleted')
                 } else {
                     toast.success(isLogin ? '登录成功' : '注册成功', { onClose: () => router.replace('/') })
                 }
@@ -79,7 +66,7 @@ export default function AuthPage() {
             {/* <Image src="/assets/login_bg.webp" /> */}
             <Card className="w-full max-w-md transition-all">
                 <CardHeader className="flex space-x-4 border-b">
-                    <p className="text-xl text-primary md:text-xl">{isLogin ? '注册' : '登录'}</p>
+                    <p className="text-xl text-primary md:text-xl">{isLogin ? '登录' : '注册'}</p>
                 </CardHeader>
 
                 <CardBody>
