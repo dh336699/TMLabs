@@ -1,13 +1,18 @@
 'use client'
-import { Card, Avatar, Button, Divider } from '@heroui/react'
+import { Card, Avatar, Button, Divider, Listbox, ListboxItem } from '@heroui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faPlus, faBook } from '@fortawesome/free-solid-svg-icons'
+import { useReportList } from "@/api/user-center"
+import { isEmpty } from "lodash"
 
 export default function ProfilePage() {
     const stats = [
         { label: '关注', value: '2.3k' },
         { label: '粉丝', value: '1.8k' }
     ]
+
+    const { data: reportList } = useReportList()
+    console.log(reportList);
 
     return (
         <div className="max-w-4xl mx-auto p-4 sm:p-6">
@@ -55,6 +60,20 @@ export default function ProfilePage() {
                         <p className="text-sm text-gray-500 mt-2">参考案例：资深前端工程师 | 开源爱好者</p>
                     </div>
                 </div>
+            </Card>
+
+            <Card className="mb-6 p-2">
+                {reportList && !isEmpty(reportList.data) ? <Listbox aria-label="Actions" onAction={(key) => alert(key)}>
+                    {
+                        reportList && reportList.data!.map(report => <ListboxItem key={report.id}>
+                            <div className="flex items-center">
+                                <p className="mr-2 text-sm ">{report.report_name}</p>
+                                <Button color="primary" variant="light" size="sm">
+                                    点击下载
+                                </Button>
+                            </div></ListboxItem>)
+                    }
+                </Listbox> : <p>暂无</p>}
             </Card>
 
             {/* 知识库区块 */}

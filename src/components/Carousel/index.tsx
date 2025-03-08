@@ -7,10 +7,10 @@ import { usePrevNextButtons } from "@/hooks/usePrevNextButtons";
 import { IQuestionaireItem } from "@/model/question";
 import { isEmpty } from "lodash";
 import { LoadingIcon } from "../General";
-import { createBehaviorGiagram, postAnswer } from "@/api/questions";
+import { createBehaviorDiagram, postAnswer } from "@/api/questions";
 import { toast } from "react-toastify";
 
-const Carousel = ({ questionaires, setData }: { questionaires: IQuestionaireItem[]; setData: (data: any) => void }) => {
+const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[]; }) => {
     const [curIdx, setCurIds] = useState(0)
     const [loading, setLoading] = useState(false)
     const [answers, setAnswers] = useState<{ question_id: number | string; selected_option_ids: string[] }[]>([])
@@ -56,10 +56,10 @@ const Carousel = ({ questionaires, setData }: { questionaires: IQuestionaireItem
     const handleSubmit = useCallback(async () => {
         try {
             setLoading(true)
-            setData({ accessmentCompleted: true })
+            sessionStorage.setItem('accessmentCompleted', '1')
             await postAnswer(answers)
-            const res = await createBehaviorGiagram()
-            toast.success(res.message, { autoClose: 1000 })
+            const res = await createBehaviorDiagram()
+            toast.success(res.message)
             if (res.download_url) {
                 window.location.href = res.download_url; // 直接触发下载
             } else {

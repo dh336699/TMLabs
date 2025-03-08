@@ -1,12 +1,12 @@
 'use client'
 import { useCallback, useContext, useState } from 'react'
-import { Button, Input, Card, CardBody, CardHeader, Form } from '@heroui/react'
+import { Button, Input, Card, CardBody, CardHeader, Image } from '@heroui/react'
 import { httpRequest } from "@/utils/axios"
 import { isEmpty, pick } from "lodash"
 import { useRouter } from "next/navigation"
 import { toast } from 'react-toastify'
-import { GlobalContext } from "../GlobalContexrProvider"
-import { createBehaviorGiagram, postAnswer } from "@/api/questions"
+import { createBehaviorDiagram, postAnswer } from "@/api/questions"
+import { classnames } from "@/utils/classnames"
 
 interface IUserInfo {
     avatar: string; email: string; id: number; nickname: string; phone: number;
@@ -26,7 +26,22 @@ export default function AuthPage() {
         password: '',
     })
     const router = useRouter()
-    const { data: { accessmentCompleted } } = useContext(GlobalContext)
+
+    const generateReport = async () => {
+        try {
+            const answers = localStorage.getItem('answers') ? JSON.parse(localStorage.getItem('answers') as string) : []
+            if (isEmpty(answers)) {
+                toast.error('答案为空, 需要重新答题哦', { onClose: () => router.replace('/') })
+            } else {
+                await postAnswer(answers)
+                const res = await createBehaviorDiagram()
+                toast.success(res.message)
+                router.replace('/user-center')
+            }
+        } catch (error) {
+            toast.error('生成失败，请在个人中心重新生成', { onClose: () => router.replace('/user-center') })
+        }
+    }
 
     const handleSubmit = useCallback(async () => {
         let res: RequestDTO | undefined = undefined
@@ -40,20 +55,10 @@ export default function AuthPage() {
             if (!isEmpty(res) && res.token) {
                 localStorage.setItem('token', res.token)
                 // 答题时跳过来登录，登录成功后生成报告然后直接跳转到用户中心
-                if (accessmentCompleted) {
-                    toast.success('登录成功, 正在生成交易习惯分析报告..')
-                    const answers = localStorage.getItem('answers') ? JSON.parse(localStorage.getItem('answers') as string) : []
-                    if (isEmpty(answers)) {
-                        toast.error('答案为空, 需要重新答题哦', { autoClose: 1000, onClose: () => router.replace('/') })
-                    } else {
-                        await postAnswer(answers)
-                        toast.success('提交成功, 正在生成交易习惯分析报告', { autoClose: 1000 })
-                        const res = await createBehaviorGiagram()
-                        toast.success(res.message, { autoClose: 1000 })
-                        router.replace('/user-center')
-                    }
+                if (sessionStorage.getItem('accessmentCompleted')) {
+                    toast.success('登录成功, 正在生成交易习惯分析报告', { onClose: generateReport, delay: 1000 })
                 } else {
-                    toast.success(isLogin ? '登录成功' : '注册成功', { autoClose: 300, onClose: () => router.replace('/') })
+                    toast.success(isLogin ? '登录成功' : '注册成功', { onClose: () => router.replace('/') })
                 }
             }
         } catch (error) {
@@ -61,11 +66,19 @@ export default function AuthPage() {
         }
     }, [formData, isLogin])
 
+    const bgClass = 'bg-[url(/assets/login_bg.webp)] bg-cover bg-center'
     return (
-        <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+        <div className={classnames('flex justify-center items-center w-screen gap-12 sm:flex-col md:flex-row h-screen', bgClass)}>
+            <div className="text-center">
+                <h1 className="text-3xl font-bold text-white mb-2">MLabs</h1>
+                <p className="text-md text-primary">
+                    全球首个AI交易心理测评平台
+                </p>
+            </div>
+            {/* <Image src="/assets/login_bg.webp" /> */}
             <Card className="w-full max-w-md transition-all">
                 <CardHeader className="flex space-x-4 border-b">
-                    <p className="text-xl text-primary md:text-xl">交易心理测评系统</p>
+                    <p className="text-xl text-primary md:text-xl">{isLogin ? '注册' : '登录'}</p>
                 </CardHeader>
 
                 <CardBody>
@@ -119,16 +132,14 @@ export default function AuthPage() {
                             {isLogin ? '立即登录' : '立即注册'}
                         </Button>
 
-                        <div className="text-center text-sm text-gray-600 mt-4">
+                        <div className="gap-4 flex justify-center items-center text-sm text-gray-600 mt-4">
                             {isLogin ? '没有账号？' : '已有账号？'}
-                            <Button
-                                variant="ghost"
-                                size="sm"
+                            <p
                                 onClick={() => setIsLogin(!isLogin)}
-                                className="ml-2 text-blue-600"
+                                className="ml-2 text-blue-600 cursor-pointer"
                             >
                                 {isLogin ? '注册新账号' : '直接登录'}
-                            </Button>
+                            </p>
                         </div>
                     </div>
                 </CardBody>

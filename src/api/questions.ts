@@ -27,4 +27,4 @@ interface ReportResponse {
   report_name: string;
   download_url: string;
 }
-export const createBehaviorGiagram = () => httpRequest<ReportResponse>('/survey/generate-report', { method: 'POST' })
+export const createBehaviorDiagram = () => httpRequest<ReportResponse>('/survey/generate-report', { method: 'POST', ignoreError: true })

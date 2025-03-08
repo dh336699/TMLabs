@@ -66,4 +66,6 @@ const handleGlobalError = (error: unknown) => {
 	} else {
 		toast.error('未知错误')
 	}
+
+    return Promise.reject(error)
 }
