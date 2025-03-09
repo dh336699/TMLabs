@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { useRouter, usePathname } from 'next/navigation'
 
-import { faBars, faUser, faHome, faClipboardCheck } from '@fortawesome/free-solid-svg-icons'
+import { faBars, faUser } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
     Navbar,
