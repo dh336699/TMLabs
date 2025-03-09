@@ -11,7 +11,7 @@ import {
     Dropdown, DropdownTrigger, DropdownMenu, DropdownItem,
     useDisclosure,
 } from '@heroui/react'
-import { useContext, useEffect, useState } from "react"
+import { useCallback, useContext, useEffect, useState } from "react"
 import { GlobalContext } from "@/app/GlobalContexrProvider"
 
 const Header = () => {
@@ -19,17 +19,20 @@ const Header = () => {
     const [hasToken, setHasToken] = useState(false);
     const router = useRouter()
     const pathname = usePathname()
-    const { data: { token } } = useContext(GlobalContext)
+    const { data, setData } = useContext(GlobalContext)
 
     // 判断菜单是否激活
     const isHomeActive = pathname === '/'
     const isAssessmentActive = pathname === '/assessment' || pathname.startsWith('/assessment/')
 
+    const handleLoginOut = useCallback(() => {
+        setData({ ...data, token: undefined })
+        router.push('/login')
+    }, [])
+
     useEffect(() => {
-        if (token) {
-            setHasToken(!!token);
-        }
-    }, [token]);
+        setHasToken(!!data.token);
+    }, [data.token]);
 
     return (
         <div className="border-b-[0.5px] border-solid border-gray-800 sticky top-0 z-10 bg-black box-border">
@@ -108,10 +111,7 @@ const Header = () => {
                                 <DropdownItem key="user-center" onPress={() => router.push('/user-center')}>
                                     个人中心
                                 </DropdownItem>
-                                <DropdownItem key="logonOut" onPress={() => {
-                                    localStorage.removeItem('token')
-                                    router.push('/login')
-                                }}>
+                                <DropdownItem key="logonOut" onPress={handleLoginOut}>
                                     退出登录
                                 </DropdownItem>
                             </DropdownMenu>
