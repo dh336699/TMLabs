@@ -9,18 +9,27 @@ const nextConfig: NextConfig = {
 			// 	source: '/api/:path*', // 匹配所有 /api 开头的请求
 			// 	destination: 'https://api.ljaym.com/api/:path*', // 转发到目标 API
 			// },
-            {
+			{
 				source: '/api/:path*', // 匹配所有 /api 开头的请求
 				destination: 'https://api.tmlabs.ai/api/:path*', // 转发到目标 API
 			},
 		]
 	},
 	images: {
-		domains: ['via.placeholder.com', 'picsum.photos'],
+		remotePatterns: [
+			{
+				protocol: 'https',
+				hostname: 'via.placeholder.com',
+			},
+			{
+				protocol: 'https',
+				hostname: 'picsum.photos',
+			},
+		],
 	},
-    eslint: {
-        ignoreDuringBuilds: true,
-      },
+	eslint: {
+		ignoreDuringBuilds: true,
+	},
 	devServer: {
 		port: 5689,
 	},
