@@ -1,5 +1,5 @@
 'use client'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { addToast, Button } from '@heroui/react'
 import Input from '@/components/Input'
 import Row from '@/components/Grid/Row';
@@ -8,6 +8,7 @@ import { httpRequest } from "@/utils/axios"
 import { isEmpty, pick } from "lodash"
 import { useRouter, useSearchParams } from "next/navigation"
 import { classnames } from "@/utils/classnames"
+import { GlobalContext } from "../GlobalContexrProvider";
 
 interface IUserInfo {
     avatar: string; email: string; id: number; nickname: string; phone: number;
@@ -29,6 +30,8 @@ export default function AuthPage() {
     const router = useRouter()
     const searchParams = useSearchParams()
 
+    const { data, setData } = useContext(GlobalContext)
+
     const handleSubmit = useCallback(async () => {
         let res: RequestDTO | undefined = undefined
         try {
@@ -40,6 +43,7 @@ export default function AuthPage() {
             }
 
             if (!isEmpty(res) && res.token) {
+                setData(({ ...data, token: res.token }))
                 localStorage.setItem('token', res.token)
                 // 答题时跳过来登录，登录成功后生成报告然后直接跳转到用户中心
                 if (sessionStorage.getItem('accessmentCompleted')) {

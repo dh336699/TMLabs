@@ -70,8 +70,7 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[]; }) =>
                 console.error('未获取到下载链接');
             }
         } catch (error) {
-            console.error(error)
-            // addToast({ title: '服务器异常', color: 'danger' })
+            console.log(error);
         } finally {
             setLoading(false)
         }
@@ -133,7 +132,7 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[]; }) =>
                 </div>
             </div>
             {loading && <Spinner className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />}
-            <div className="mt-[4rem] flex justify-between">
+            <div className="mt-[4rem] mx-5 flex justify-between">
                 {
                     !isFirst ? <Button isDisabled={loading} onPress={onPrevButtonClick}>上一题</Button> : <div></div>
                 }

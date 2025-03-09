@@ -1,6 +1,5 @@
 'use client'
 import axios, { AxiosError, AxiosRequestConfig } from 'axios'
-import { toast } from 'react-toastify'
 import { isEmpty } from 'lodash'
 import { addToast } from "@heroui/react"
 

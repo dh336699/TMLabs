@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-type Middleware = (req: NextRequest) => NextResponse | Promise<NextResponse | any> | any
-
 export const config = {
 	matcher: ['/((?!_next/static|_next/image|assets|favicon.ico|sw.js).*)'],
 }

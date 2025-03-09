@@ -9,7 +9,7 @@ export default function AuthPage({ children }: { children: React.ReactNode }) {
         if (!token) {
             router.replace('/login') // 如果没有 Token，跳转到登录页
         }
-    }, [])
+    }, [router])
     return <>
         {children}
     </>

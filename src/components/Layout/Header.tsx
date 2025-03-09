@@ -3,18 +3,14 @@
 import Image from 'next/image'
 import { useRouter, usePathname } from 'next/navigation'
 
-import { faBars, faUser } from '@fortawesome/free-solid-svg-icons'
+import { faUser } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
     Navbar,
     NavbarBrand,
     Dropdown, DropdownTrigger, DropdownMenu, DropdownItem,
     useDisclosure,
-    addToast
 } from '@heroui/react'
-import { IReportItem } from "@/api/user-center"
-import { isEmpty } from "lodash"
-import { downloadFile } from "@/utils/download"
 import { useContext, useEffect, useState } from "react"
 import { GlobalContext } from "@/app/GlobalContexrProvider"
 
@@ -23,22 +19,17 @@ const Header = () => {
     const [hasToken, setHasToken] = useState(false);
     const router = useRouter()
     const pathname = usePathname()
-    const { data: { reports } } = useContext(GlobalContext)
+    const { data: { token } } = useContext(GlobalContext)
 
     // 判断菜单是否激活
     const isHomeActive = pathname === '/'
     const isAssessmentActive = pathname === '/assessment' || pathname.startsWith('/assessment/')
 
-    const handleDownload = async (report: IReportItem) => {
-        const url = `/survey/reports/${report.id}/download`
-        addToast({ title: '正在下载中' })
-        downloadFile({ url, cors: true })
-    }
-
     useEffect(() => {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-        setHasToken(!!token);
-    }, []);
+        if (token) {
+            setHasToken(!!token);
+        }
+    }, [token]);
 
     return (
         <div className="border-b-[0.5px] border-solid border-gray-800 sticky top-0 z-10 bg-black box-border">
@@ -88,24 +79,6 @@ const Header = () => {
                 </div>
 
                 <div className="flex items-center gap-4 ml-auto">
-                    {/* 报告下拉菜单 */}
-                    {!isEmpty(reports) && (
-                        <Dropdown>
-                            <DropdownTrigger>
-                                <FontAwesomeIcon icon={faBars} className="w-5 h-5 text-white cursor-pointer" />
-                            </DropdownTrigger>
-                            <DropdownMenu>
-                                {
-                                    reports!.map(report => (
-                                        <DropdownItem key={report.id} onPress={() => handleDownload(report)}>
-                                            {report.report_name}
-                                        </DropdownItem>
-                                    )) ?? []
-                                }
-                            </DropdownMenu>
-                        </Dropdown>
-                    )}
-
                     {/* 未登录时显示登录注册按钮 */}
                     {!hasToken ? (
                         <div className="flex gap-3">
@@ -145,8 +118,8 @@ const Header = () => {
                         </Dropdown>
                     )}
                 </div>
-            </Navbar>
-        </div>
+            </Navbar >
+        </div >
     )
 }
 

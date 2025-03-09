@@ -28,7 +28,7 @@ export default function ProfilePage() {
         if (!isEmpty(reports)) {
             setData({ reports: reports.data })
         }
-    }, [reports])
+    }, [reports, setData])
 
     return (
         <div className="md:w-[80vw] mx-auto p-4 sm:p-6">

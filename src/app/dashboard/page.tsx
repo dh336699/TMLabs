@@ -3,8 +3,6 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import Header from "@/components/Layout/Header";
-import Footer from "@/components/Layout/Footer";
 
 // 定义数据类型
 interface Testimonial {
