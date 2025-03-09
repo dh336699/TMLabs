@@ -69,9 +69,9 @@ export default function AuthPage() {
 
     const bgClass = 'bg-[url(/assets/login_bg.webp)] bg-cover bg-center'
     return (
-        <div className={classnames('flex items-center w-full h-screen', bgClass)}>
+        <div className={classnames('flex items-center w-full h-[calc(100vh-80px)]', bgClass)}>
             <div className='container mx-auto'>
-                <Row gutter={12} className='w-full'>
+                <Row className='w-full'>
                     <Col sm={24} md={12}>
                         <div className="flex flex-col items-center justify-center h-full">
                             <h1 className="text-[52px] font-bold text-white mb-2">MLabs</h1>

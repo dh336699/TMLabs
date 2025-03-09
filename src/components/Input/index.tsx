@@ -5,10 +5,11 @@ import { Input as InputComponent } from '@heroui/react'
 type InputComponentProps = React.ComponentProps<typeof InputComponent>;
 
 // 自定义Input组件的属性
-const Input = (props: InputComponentProps) => {
+const Input = (props: InputComponentProps, ref: React.Ref<HTMLInputElement>) => {
 
   return (
     <InputComponent
+      ref={ref}
       isClearable
       classNames={{
         label: "text-black dark:text-white/90",

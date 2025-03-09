@@ -70,11 +70,12 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[]; }) =>
                 console.error('未获取到下载链接');
             }
         } catch (error) {
+            console.error(error)
             // addToast({ title: '服务器异常', color: 'danger' })
         } finally {
             setLoading(false)
         }
-    }, [answers])
+    }, [answers, router])
 
     const isFirst = useMemo(() => {
         if (!isEmpty(questionaires) && curIdx === 0) {
