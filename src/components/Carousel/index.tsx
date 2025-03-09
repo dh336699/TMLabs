@@ -114,9 +114,9 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[]; }) =>
             <div className="w-full h-full" ref={emblaRef} >
                 <div className="flex">
                     {questionaires.map((question) => (
-                        <div style={{ flex: '0 0 90%' }} className="mx-5 px-5  bg-white rounded-xl border-2 border-gray-100 hover:border-gray-200 transition-all duration-300 group cursor-pointer" key={question.id}>
+                        <div style={{ flex: '0 0 90%' }} className="mx-5 px-5  bg-white transition-all duration-300 group cursor-pointer" key={question.id}>
                             <div className="py-4 flex-col items-start">
-                                <h2 className="font-bold">{question.title}</h2>
+                                <p>{question.title}</p>
                             </div>
                             <div className="py-2 pb-6">
                                 <RadioGroup onValueChange={handleSelectAnswer}>
