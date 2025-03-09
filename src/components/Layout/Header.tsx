@@ -11,7 +11,7 @@ import {
     Dropdown, DropdownTrigger, DropdownMenu, DropdownItem,
     useDisclosure,
 } from '@heroui/react'
-import { useContext, useEffect, useState } from "react"
+import { useCallback, useContext, useEffect, useState } from "react"
 import { GlobalContext } from "@/app/GlobalContexrProvider"
 
 const Header = () => {
@@ -20,7 +20,7 @@ const Header = () => {
     const [hasToken, setHasToken] = useState(false);
     const router = useRouter()
     const pathname = usePathname()
-    const { data: { token } } = useContext(GlobalContext)
+    const { data, setData } = useContext(GlobalContext)
 
     // 判断菜单是否激活
     const isHomeActive = pathname === '/'
@@ -45,12 +45,14 @@ const Header = () => {
         router.push('/login')
         setMobileMenuOpen(false)
     }
+    const handleLoginOut = useCallback(() => {
+        setData({ ...data, token: undefined })
+        router.push('/login')
+    }, [])
 
     useEffect(() => {
-        if (token) {
-            setHasToken(!!token);
-        }
-    }, [token]);
+        setHasToken(!!data.token);
+    }, [data.token]);
 
     // 当路由改变时关闭移动菜单
     useEffect(() => {
@@ -148,10 +150,7 @@ const Header = () => {
                                 <DropdownItem key="user-center" onPress={() => router.push('/user-center')}>
                                     个人中心
                                 </DropdownItem>
-                                <DropdownItem key="logonOut" onPress={() => {
-                                    localStorage.removeItem('token')
-                                    router.push('/login')
-                                }}>
+                                <DropdownItem key="logonOut" onPress={handleLoginOut}>
                                     退出登录
                                 </DropdownItem>
                             </DropdownMenu>
