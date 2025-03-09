@@ -2,13 +2,12 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import { RadioGroup, Radio, Button, Spinner } from "@heroui/react";
+import { RadioGroup, Radio, Button, Spinner, addToast } from "@heroui/react";
 import { usePrevNextButtons } from "@/hooks/usePrevNextButtons";
 import { IQuestionaireItem } from "@/model/question";
 import { isEmpty } from "lodash";
 import { LoadingIcon } from "../General";
 import { createBehaviorDiagram, postAnswer } from "@/api/questions";
-import { toast } from "react-toastify";
 import { downloadFile } from "@/utils/download";
 import { useRouter } from "next/navigation";
 
@@ -62,17 +61,16 @@ const Carousel = ({ questionaires }: { questionaires: IQuestionaireItem[]; }) =>
             await postAnswer(answers)
             const res = await createBehaviorDiagram()
             if (res.download_url) {
-                toast.success('正在下载中', {
-                    onOpen: () => downloadFile({
-                        url: res.download_url, baseURL: process.env.NEXT_PUBLIC_API_DOWN_PREFIX,
-                        cors: true, fileName: res.report_name || '性格分析报告', cb: () => router.replace('/user-center')
-                    })
+                addToast({ title: '正在下载中', timeout: 1000 })
+                downloadFile({
+                    url: res.download_url, baseURL: process.env.NEXT_PUBLIC_API_DOWN_PREFIX,
+                    cors: true, fileName: res.report_name || '性格分析报告', cb: () => router.replace('/user-center')
                 })
             } else {
                 console.error('未获取到下载链接');
             }
         } catch (error) {
-            console.log(error)
+            // addToast({ title: '服务器异常', color: 'danger' })
         } finally {
             setLoading(false)
         }

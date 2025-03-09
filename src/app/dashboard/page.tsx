@@ -74,7 +74,6 @@ export default function Dashboard() {
 
     return (
         <div>
-            <Header />
             {/* 英雄区域 */}
             <section className="bg-black py-16 md:py-24">
                 <div className="container mx-auto px-6">
@@ -329,7 +328,6 @@ export default function Dashboard() {
                     </motion.div>
                 </div>
             </section>
-            <Footer />
         </div>
     );
 } 

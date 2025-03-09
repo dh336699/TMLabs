@@ -1,7 +1,8 @@
 'use client'
-import axios, { AxiosRequestConfig } from 'axios'
+import axios, { AxiosError, AxiosRequestConfig } from 'axios'
 import { toast } from 'react-toastify'
 import { isEmpty } from 'lodash'
+import { addToast } from "@heroui/react"
 
 type FetcherConfig = AxiosRequestConfig & {
 	// 自定义扩展配置
@@ -21,20 +22,21 @@ export const httpRequest = async <Data = any>(
 			},
 			...config,
 		})
+        if (data.code && data.code !==200) {
+            addToast({ title: data.message || '服务器异常', color: 'danger'})
+        }
 		return data
 	} catch (error) {
 		// 统一错误处理
 		if (!config?.ignoreError) {
-			handleGlobalError(error)
+			handleGlobalError(error as AxiosError)
 		}
-		throw error
 	}
 }
 
 axios.interceptors.response.use(
 	(response) => {
-        
-		if (response.status >= 200 && response.status < 300) {
+		if (response.status >= 200 && response.status < 300 ) {
 			return !isEmpty(response.data) ? response.data : response
 		} else {
             return Promise.reject(response.data)
@@ -43,27 +45,25 @@ axios.interceptors.response.use(
 	(error) => Promise.reject(error),
 )
 // 全局错误处理函数
-const handleGlobalError = (error: unknown) => {
+const handleGlobalError = (error: AxiosError) => {
+    
 	if (axios.isAxiosError(error)) {
 		const status = error.response?.status
-		const message = error.response?.data?.message || '服务器异常'
-
+		const message = (error.response?.data as any)?.message || '服务器异常'
+        
 		switch (status) {
 			case 401:
-				toast.error('请先登录', {
-					onClose: () => {
-						window.location.href = '/login'
-					},
-				})
+                addToast({ title: '请先登录', color: 'danger'})
+	            window.location.href = '/login'
 				break
 			case 403:
-				toast.error('权限不足')
+                addToast({ title: '权限不足', color: 'danger'})
 				break
 			default:
-				toast.error(message)
+                addToast({ title: message, color: 'danger'})
 		}
 	} else {
-		toast.error('未知错误')
+        addToast({ title: '未知错误', color: 'danger'})
 	}
 
     return Promise.reject(error)

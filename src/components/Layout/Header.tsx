@@ -1,8 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useCallback } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 
 import { faBars, faUser } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -10,23 +9,27 @@ import {
     Navbar,
     NavbarBrand,
     Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button,
-    useDisclosure,
+    useDisclosure, Tooltip,
+    addToast
 } from '@heroui/react'
+import { IReportDTO, IReportItem } from "@/api/user-center"
+import { isEmpty } from "lodash"
+import { downloadFile } from "@/utils/download"
+import { useCallback, useContext, useEffect, useState } from "react"
+import { httpRequest } from "@/utils/axios"
+import { GlobalContext } from "@/app/GlobalContexrProvider"
 
 const Header = () => {
-    const searchParams = useSearchParams()
     const { isOpen, onOpenChange, onClose } = useDisclosure()
-    const pathname = usePathname()
-    const { lang } = useParams<{ lang: string }>()
     const router = useRouter()
+    const { data: { reports } } = useContext(GlobalContext)
+    console.log(reports);
 
-    const isActive = useCallback(
-        (name: string) => {
-            const _pathname = pathname.replace(`/${lang}`, '')
-            return (_pathname === '' && name === '/') || _pathname === name
-        },
-        [lang, pathname],
-    )
+    const handleDownload = async (report: IReportItem) => {
+        const url = `/survey/reports/${report.id}/download`
+        addToast({ title: '正在下载中' })
+        downloadFile({ url, cors: true })
+    }
 
     return (
         <div className="border-b-[0.5px] border-solid border-gray-800 sticky top-0 z-10 bg-black box-border">
@@ -51,7 +54,45 @@ const Header = () => {
                     <div className="text-xl text-primary md:text-xl font-bold inline-block md:hidden">TMLabs</div>
                 </NavbarBrand>
                 {
-                    localStorage.getItem('token') ? <FontAwesomeIcon icon={faUser} onClick={() => router.push('/user-center')} className="w-5 h-5 text-white cursor-pointer" /> : null
+                    !isEmpty(reports) ? <Dropdown>
+                        <DropdownTrigger>
+                            <FontAwesomeIcon icon={faBars} className="w-5 h-5 text-white cursor-pointer" />
+                        </DropdownTrigger>
+                        <DropdownMenu>
+                            {
+                                reports!.map(report => (
+                                    <DropdownItem key={report.id} onPress={() => handleDownload(report)}>
+                                        {report.report_name}
+                                    </DropdownItem>
+                                )) ?? []
+                            }
+                        </DropdownMenu>
+                    </Dropdown> : null
+                }
+                {
+                    <Dropdown>
+                        <DropdownTrigger>
+                            <FontAwesomeIcon icon={faUser} className="w-5 h-5 text-white cursor-pointer" />
+                        </DropdownTrigger>
+                        <DropdownMenu>
+                            <DropdownItem key="assessment" onPress={() => router.push('/assessment')}>开始测评</DropdownItem>
+                            {
+                                localStorage.getItem('token') ? <DropdownItem key="user-center" onPress={() => router.push('/user-center')}>个人中心</DropdownItem> : null
+                            }
+                            {
+                                !localStorage.getItem('token') ? <><DropdownItem key="login" onPress={() => router.push('/login?type=login')}>登录</DropdownItem>
+                                    <DropdownItem key="register" onPress={() => router.push('/login?type=register')}>注册</DropdownItem></> : null
+                            }
+                            {
+                                localStorage.getItem('token') ? <DropdownItem key="logonOut" onPress={() => {
+                                    localStorage.removeItem('token')
+                                    router.push('/login')
+                                }}>
+                                    退出登录
+                                </DropdownItem> : null
+                            }
+                        </DropdownMenu>
+                    </Dropdown>
                 }
             </Navbar>
         </div>

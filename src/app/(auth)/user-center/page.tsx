@@ -1,11 +1,12 @@
 'use client'
-import { Card, Avatar, Button, Listbox, ListboxItem } from '@heroui/react'
+import { Card, Avatar, Button, Listbox, ListboxItem, addToast } from '@heroui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faLock, faPlus, faBook } from '@fortawesome/free-solid-svg-icons'
-import { downloadReport, IReportItem, useReportList } from "@/api/user-center"
+import { faLock, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { IReportItem, useReportList } from "@/api/user-center"
 import { isEmpty } from "lodash"
 import { downloadFile } from "@/utils/download"
-import { toast } from "react-toastify"
+import { useContext, useEffect } from "react"
+import { GlobalContext } from "@/app/GlobalContexrProvider"
 
 export default function ProfilePage() {
     const stats = [
@@ -13,12 +14,21 @@ export default function ProfilePage() {
         { label: '粉丝', value: '1.8k' }
     ]
 
-    const { data: reportList } = useReportList()
+    const { setData } = useContext(GlobalContext)
+
+    const { data: reports } = useReportList()
 
     const handleDownload = async (report: IReportItem) => {
         const url = `/survey/reports/${report.id}/download`
-        toast.success('正在下载中', { onOpen: () => downloadFile({ url, cors: true }) })
+        addToast({ title: '正在下载中' })
+        downloadFile({ url, cors: true })
     }
+
+    useEffect(() => {
+        if (!isEmpty(reports)) {
+            setData({ reports: reports.data })
+        }
+    }, [reports])
 
     return (
         <div className="md:w-[80vw] mx-auto p-4 sm:p-6">
@@ -70,9 +80,9 @@ export default function ProfilePage() {
             <div>
                 <p className="text-l text-medium mb-3">报告列表</p>
                 <Card className="mb-6 p-2">
-                    {reportList && !isEmpty(reportList.data) ? <Listbox shouldHighlightOnFocus={false} aria-label="Actions">
+                    {reports && !isEmpty(reports.data) ? <Listbox shouldHighlightOnFocus={false} aria-label="Actions">
                         {
-                            reportList && reportList.data!.map(report => <ListboxItem key={report.id}>
+                            reports && reports.data!.map(report => <ListboxItem key={report.id}>
                                 <div className="flex items-center">
                                     <p className="mr-2 text-sm ">{report.report_name}</p>
                                     <Button color="primary" variant="light" size="sm" onPress={() => handleDownload(report)}>

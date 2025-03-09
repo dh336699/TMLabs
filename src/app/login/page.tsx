@@ -1,13 +1,12 @@
 'use client'
-import { useCallback, useState } from 'react'
-import { Button } from '@heroui/react'
+import { useCallback, useEffect, useState } from 'react'
+import { addToast, Button } from '@heroui/react'
 import Input from '@/components/Input'
 import Row from '@/components/Grid/Row';
 import Col from '@/components/Grid/Col';
 import { httpRequest } from "@/utils/axios"
 import { isEmpty, pick } from "lodash"
-import { useRouter } from "next/navigation"
-import { toast } from 'react-toastify'
+import { useRouter, useSearchParams } from "next/navigation"
 import { classnames } from "@/utils/classnames"
 
 interface IUserInfo {
@@ -28,6 +27,7 @@ export default function AuthPage() {
         password: '',
     })
     const router = useRouter()
+    const searchParams = useSearchParams()
 
     const handleSubmit = useCallback(async () => {
         let res: RequestDTO | undefined = undefined
@@ -38,22 +38,34 @@ export default function AuthPage() {
                 res = await httpRequest<RequestDTO>('/auth/register', { data: formData, method: 'POST' })
 
             }
-            console.log(res);
 
             if (!isEmpty(res) && res.token) {
                 localStorage.setItem('token', res.token)
                 // 答题时跳过来登录，登录成功后生成报告然后直接跳转到用户中心
                 if (sessionStorage.getItem('accessmentCompleted')) {
-                    toast.success(isLogin ? '登录成功' : '注册成功', { onClose: () => router.replace('/user-center') })
+                    addToast({ title: isLogin ? '登录成功' : '注册成功', color: 'success', timeout: 1000 })
+                    router.replace('/user-center')
                     sessionStorage.removeItem('accessmentCompleted')
                 } else {
-                    toast.success(isLogin ? '登录成功' : '注册成功', { onClose: () => router.replace('/') })
+                    addToast({ title: isLogin ? '登录成功' : '注册成功', color: 'success', timeout: 1000 })
+                    router.replace('/')
                 }
             }
         } catch (error) {
             console.error(error)
         }
     }, [formData, isLogin, router])
+
+    useEffect(() => {
+        if (searchParams) {
+            const type = searchParams.get('type')
+            if (type === 'login') {
+                setIsLogin(true)
+            } else if (type === 'register') {
+                setIsLogin(false)
+            }
+        }
+    }, [searchParams])
 
     const bgClass = 'bg-[url(/assets/login_bg.webp)] bg-cover bg-center'
     return (

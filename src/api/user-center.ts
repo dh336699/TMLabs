@@ -9,7 +9,7 @@ export interface IReportItem {
     created_at: string
 }
 
-interface IReportDTO {
+export interface IReportDTO {
     data: IReportItem[],
     pagination: IPagination
 }

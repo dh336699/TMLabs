@@ -1,14 +1,14 @@
 import type { Metadata } from 'next'
 import '@/styles/globals.css'
 import '@/styles/theme.css'
-import { ToastContainer } from "react-toastify";
-
 import { Geist, Geist_Mono } from 'next/font/google'
 
 import { HeroUIProviders } from './HeroUIProvider'
 import Header from '@/components/Layout/Header'
 import Footer from '@/components/Layout/Footer'
 import GlobalContexrProvider from "./GlobalContexrProvider";
+import { ToastProvider } from "@heroui/toast";
+
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -35,8 +35,8 @@ export default async function RootLayout({
         <html lang="en">
             <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-full`}>
-                <ToastContainer autoClose={2000} />
                 <HeroUIProviders>
+                    <ToastProvider placement="top-center" maxVisibleToasts={1} toastProps={{ timeout: 2000, shouldShowTimeoutProgress: true }} />
                     <GlobalContexrProvider>
                         <div className="min-h-screen flex flex-col justify-between">
                             <Header />
