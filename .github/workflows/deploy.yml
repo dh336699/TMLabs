@@ -3,139 +3,133 @@ name: Deploy NeZha Quant Website To Cloud
 on:
   push:
     branches:
-      - main  # 监听 main 分支的变动
+      - main # 监听 main 分支的变动
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    # 检出代码
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # 检出代码
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    # 设置 Node.js 版本
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20' # 设置项目所需的 Node.js 版本
+      # 设置 Node.js 版本
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20' # 设置项目所需的 Node.js 版本
 
-    # 安装 pnpm
-    - name: Install pnpm
-      run: npm install -g pnpm
+      # 缓存 npm 依赖
+      - name: Cache npm dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-cache-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-cache-
 
-    # 缓存 pnpm 依赖
-    - name: Cache pnpm store
-      uses: actions/cache@v3
-      with:
-        path: ~/.pnpm-store
-        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
-        restore-keys: |
-          ${{ runner.os }}-pnpm-store-
+      # 安装依赖
+      - name: Install dependencies
+        run: npm ci
 
-    # 安装依赖
-    - name: Install dependencies
-      run: pnpm install
+      # 构建 Next.js 项目
+      - name: Build Next.js project
+        run: npm run build
 
-    # 构建 Next.js 项目
-    - name: Build Next.js project
-      run: pnpm build
+      # 打包文件
+      - name: Archive production files
+        run: tar -czf tmlabs.tar.gz .next public package.json package-lock.json
 
-    # 打包文件
-    - name: Archive production files
-      run: tar -czf nezha-quant.tar.gz .next public package.json pnpm-lock.yaml
+      # 使用 ssh-keyscan 添加目标服务器的主机密钥
+      - name: Add SSH Host Key
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+          echo "Contents of known_hosts:"
+          cat ~/.ssh/known_hosts
 
-    # 使用 ssh-keyscan 添加目标服务器的主机密钥
-    - name: Add SSH Host Key
-      run: |
-        mkdir -p ~/.ssh
-        chmod 700 ~/.ssh
-        ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
-        echo "Contents of known_hosts:"
-        cat ~/.ssh/known_hosts
+      # 将文件部署到阿里云
+      - name: Deploy to Alibaba Cloud
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          APP_DIR: ${{ secrets.APP_DIR }} # 确保 APP_DIR 已正确设置
+          NEXT_PUBLIC_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
+          NEXT_PUBLIC_API_DOWN_PREFIX: ${{ secrets.NEXT_PUBLIC_API_DOWN_PREFIX }}
+        run: |
+          echo "$SSH_PRIVATE_KEY" > private_key
+          chmod 600 private_key
 
-    # 将文件部署到阿里云
-    - name: Deploy to Alibaba Cloud
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        SERVER_HOST: ${{ secrets.SERVER_HOST }}
-        SERVER_USER: ${{ secrets.SERVER_USER }}
-        APP_DIR: ${{ secrets.APP_DIR }}  # 确保 APP_DIR 已正确设置
-      run: |
-        echo "$SSH_PRIVATE_KEY" > private_key
-        chmod 600 private_key
+          # 打印变量以调试
+          echo "SERVER_USER: $SERVER_USER"
+          echo "SERVER_HOST: $SERVER_HOST"
+          echo "APP_DIR: $APP_DIR"
 
-        # 打印变量以调试
-        echo "SERVER_USER: $SERVER_USER"
-        echo "SERVER_HOST: $SERVER_HOST"
-        echo "APP_DIR: $APP_DIR"
+          # 检查 APP_DIR 是否为空
+          if [ -z "$APP_DIR" ]; then
+            echo "Error: APP_DIR is not set."
+            exit 1
+          fi
 
-        # 检查 APP_DIR 是否为空
-        if [ -z "$APP_DIR" ]; then
-          echo "Error: APP_DIR is not set."
-          exit 1
-        fi
+          # 传输文件
+          scp -i private_key tmlabs.tar.gz $SERVER_USER@$SERVER_HOST:$APP_DIR
+          echo "File transfer completed."
 
-        # 传输文件
-        scp -i private_key nezha-quant.tar.gz $SERVER_USER@$SERVER_HOST:$APP_DIR
-        echo "File transfer completed."
+          # 使用 SSH 连接部署
+          ssh -i private_key $SERVER_USER@$SERVER_HOST "export APP_DIR=$APP_DIR; bash -s" << 'EOF'
+          # 确保 nvm 安装并加载
+          if [ ! -d "$HOME/.nvm" ]; then
+              echo "nvm not found, installing..."
+              curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+              export NVM_DIR="$HOME/.nvm"
+              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # 加载 nvm
+              [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # 加载 nvm bash_completion
+          fi
 
-        # 使用 SSH 连接部署
-        ssh -i private_key $SERVER_USER@$SERVER_HOST "export APP_DIR=$APP_DIR; bash -s" << 'EOF'
-        # 确保 nvm 安装并加载
-        if [ ! -d "$HOME/.nvm" ]; then
-            echo "nvm not found, installing..."
-            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # 加载 nvm
-            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # 加载 nvm bash_completion
-        fi
+          # 显式加载 nvm
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
-        # 显式加载 nvm
-        export NVM_DIR="$HOME/.nvm"
-        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-        [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+          # 使用指定版本的 Node.js
+          nvm install 20
+          nvm use 20
 
-        # 使用指定版本的 Node.js
-        nvm install 20
-        nvm use 20
+          # 确保 npm 和 pm2 在 PATH 中
+          export PATH="$NVM_DIR/versions/node/v20/bin:$PATH"
 
-        # 确保 npm 和 pm2 在 PATH 中
-        export PATH="$NVM_DIR/versions/node/v20/bin:$PATH"
+          # 确保目标目录存在
+          if [ -f "$APP_DIR" ]; then
+            rm -f $APP_DIR  # 删除已存在的文件
+          fi
+          mkdir -p $APP_DIR  # 创建目标目录
+          cd $APP_DIR
 
-        # 确保目标目录存在
-        if [ -f "$APP_DIR" ]; then
-          rm -f $APP_DIR  # 删除已存在的文件
-        fi
-        mkdir -p $APP_DIR  # 创建目标目录
-        cd $APP_DIR
+          # 检查文件是否存在
+          if [ -f "tmlabs.tar.gz" ]; then
+            echo "File exists, proceeding with extraction."
+            tar --overwrite -xzf tmlabs.tar.gz -C "$APP_DIR"
+          else
+            echo "Error: File tmlabs.tar.gz not found."
+            exit 1
+          fi
 
-        # 检查文件是否存在
-        if [ -f "nezha-quant.tar.gz" ]; then
-          echo "File exists, proceeding with extraction."
-          tar --overwrite -xzf nezha-quant.tar.gz -C "$APP_DIR"
-        else
-          echo "Error: File nezha-quant.tar.gz not found."
-          exit 1
-        fi
+          # 确保安装 pm2
+          if ! command -v pm2 &> /dev/null; then
+              echo "pm2 not found, installing..."
+              npm install -g pm2
+          fi
 
-        # 确保安装 pm2 和 pnpm
-        if ! command -v pm2 &> /dev/null; then
-            echo "pm2 not found, installing..."
-            npm install -g pm2
-        fi
-        if ! command -v pnpm &> /dev/null; then
-            echo "pnpm not found, installing..."
-            npm install -g pnpm
-        fi
+          # 安装生产依赖
+          npm ci --production
 
-        # 安装生产依赖
-        pnpm install --production
+          # 启动应用
+          pm2 delete "tmlabs" || true
+          pm2 start "npm run start" --name "tmlabs" --cwd "$APP_DIR"
+          EOF
 
-        # 启动应用
-        pm2 delete "nezha-quant" || true
-        pm2 start "pnpm run start" --name "nezha-quant" --cwd "$APP_DIR"
-        EOF
-        
-        # 清理私钥
-        rm -f private_key
+          # 清理私钥
+          rm -f private_key
