@@ -21,15 +21,20 @@ import { GlobalContext } from "@/app/GlobalContexrProvider"
 
 const Header = () => {
     const { isOpen, onOpenChange, onClose } = useDisclosure()
+    const [hasToken, setHasToken] = useState(false);
     const router = useRouter()
     const { data: { reports } } = useContext(GlobalContext)
-    console.log(reports);
 
     const handleDownload = async (report: IReportItem) => {
         const url = `/survey/reports/${report.id}/download`
         addToast({ title: '正在下载中' })
         downloadFile({ url, cors: true })
     }
+
+    useEffect(() => {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        setHasToken(!!token);
+    }, []);
 
     return (
         <div className="border-b-[0.5px] border-solid border-gray-800 sticky top-0 z-10 bg-black box-border">
@@ -77,14 +82,14 @@ const Header = () => {
                         <DropdownMenu>
                             <DropdownItem key="assessment" onPress={() => router.push('/assessment')}>开始测评</DropdownItem>
                             {
-                                localStorage.getItem('token') ? <DropdownItem key="user-center" onPress={() => router.push('/user-center')}>个人中心</DropdownItem> : null
+                                hasToken ? <DropdownItem key="user-center" onPress={() => router.push('/user-center')}>个人中心</DropdownItem> : null
                             }
                             {
-                                !localStorage.getItem('token') ? <><DropdownItem key="login" onPress={() => router.push('/login?type=login')}>登录</DropdownItem>
+                                !hasToken ? <><DropdownItem key="login" onPress={() => router.push('/login?type=login')}>登录</DropdownItem>
                                     <DropdownItem key="register" onPress={() => router.push('/login?type=register')}>注册</DropdownItem></> : null
                             }
                             {
-                                localStorage.getItem('token') ? <DropdownItem key="logonOut" onPress={() => {
+                                hasToken ? <DropdownItem key="logonOut" onPress={() => {
                                     localStorage.removeItem('token')
                                     router.push('/login')
                                 }}>
