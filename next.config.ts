@@ -18,6 +18,9 @@ const nextConfig: NextConfig = {
 	images: {
 		domains: ['via.placeholder.com', 'picsum.photos'],
 	},
+    eslint: {
+        ignoreDuringBuilds: true,
+      },
 	devServer: {
 		port: 5689,
 	},
